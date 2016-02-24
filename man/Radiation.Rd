@@ -7,9 +7,9 @@
 \format{
   A data frame with 12 observations on the following variables.
   \describe{
-  	\item{Mt}{Mean temperature, \eqn{^\circ}C.}
-  	\item{Gr}{Global radiation, MJ\eqn{m^2}.}
-  	\item{Msd}{Mean sunshine duration, h.}
+  	\item{Mt}{Mean temperature, \eqn{^\circ C}.}
+  	\item{Gr}{Global radiation, \eqn{MJm^2}.}
+  	\item{Msd}{Mean sunshine duration, hours.}
   	}}
   
 \details{Montly data.}
@@ -19,6 +19,6 @@
 }
 
 \source{
-Sivamadhavi, V. and Selvaraj, R. S. (2012). Robust regression technique to estimate the global radiation. \emph{Indian Journal of Radio & Space Physics}, \bold{41}, 17-25.
+Sivamadhavi, V. and Selvaraj, R. S. (2012). "Robust regression technique to estimate the global radiation". \emph{Indian Journal of Radio & Space Physics}, \bold{41}, 17--25.
 	}
 \keyword{datasets}

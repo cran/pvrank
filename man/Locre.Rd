@@ -22,7 +22,7 @@ Subjects were asked to check any of 20 different situations (selected on the bas
 }
 
 \source{
-Lombardo, W. K.  and Cretser, G.A. and Lombardo, B. (1983). Fer cryin'out loud - there is a sex difference. \emph{Sex Roles}, \bold{9}, 987-995.
+Lombardo, W. K.  and Cretser, G.A. and Lombardo, B. (1983). "Fer cryin'out loud - there is a sex difference". \emph{Sex Roles}, \bold{9}, 987--995.
 }
 
 \keyword{datasets}

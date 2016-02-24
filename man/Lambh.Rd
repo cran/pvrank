@@ -20,7 +20,7 @@ Two ime series data on the average monthly temperature for Central England and o
 }
 
 \source{
-Lamb, H. H. (1970). Volcanic dust in the atmosphere; with a chronological assessment of its meteorological significance. \emph{Philosophical Transactions of the Royal Society of London}, \bold{266}, 425-527.
+Lamb, H. H. (1970). "Volcanic dust in the atmosphere; with a chronological assessment of its meteorological significance". \emph{Philosophical Transactions of the Royal Society of London}, \bold{266}, 425--527.
 }
 
 \keyword{datasets}

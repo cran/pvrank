@@ -1,4 +1,7 @@
 exportPattern("^[[:alpha:]]+")
 useDynLib(pvrank)
-import(utils)
+import(EnvStats)
 import(Rmpfr)
+importFrom("graphics", "curve")
+importFrom("stats", "integrate", "optimize", "pt", "qbeta", "qnorm", "qt")
+importFrom("utils", "read.table")

@@ -11,14 +11,14 @@
   	\item{PPP}{Purchasing power parity.}
   	}}
   
-\details{The data concerning Northern Ireland are omitted because of a missing value.}
+\details{Northern Ireland data are omitted because of a missing value.}
 \examples{
 	data(Franzen)
 	head(Franzen)
 }
 
 \source{
- Franzen, A. (2003). Environmental attitudes in international comparison: an analysis of the ISSP Surveys 1993 and 2000. \emph{Social Science Quarterly}, \bold{84}, 297-308.
+ Franzen, A. (2003). "Environmental attitudes in international comparison: an analysis of the ISSP Surveys 1993 and 2000". \emph{Social Science Quarterly}, \bold{84}, 297--308.
 	}
 
 \keyword{datasets}

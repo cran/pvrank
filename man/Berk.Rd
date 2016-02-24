@@ -20,7 +20,7 @@ A data frame with 24 observations on the following two variables.
 }
 
 \source{
-Berk, R. A. (1990). A primer on robust regression. In Fox, J. and Scott Long, J. (Eds), 292-324. \emph{Modern Methods of Data Analysis}. Sage Publications, Newbury Park, Ca, USA.
+Berk, R. A. (1990). "A primer on robust regression". In Fox, J. and Scott Long, J. (Eds), 292--324. \emph{Modern Methods of Data Analysis}. Sage Publications, Newbury Park, Ca, USA.
 }
 
 \keyword{datasets}

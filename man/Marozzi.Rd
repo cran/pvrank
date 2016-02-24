@@ -24,7 +24,7 @@ The data are the proportions of citizens of 29 European countries having a posit
 }
 
 \source{
-Marozzi, M. (2014). Measuring trust in European public Institutions. \emph{Social Indicators Research}, DOI 10.1007/s11205-014-0765.
+Marozzi, M. (2015). "Measuring trust in European public Institutions". \emph{Social Indicators Research}, \bold{123}, 879--895.
 }
 
 \keyword{datasets}

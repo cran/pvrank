@@ -20,7 +20,7 @@ A data frame with 34 observations on the following 2 variables.
 }
 
 \source{
-Sharpe, W. F. (1966). Mutual fund performance. \emph{The Journal of Business}, \bold{39}, 119-138.
+Sharpe, W. F. (1966). "Mutual fund performance". \emph{The Journal of Business}, \bold{39}, 119--138.
 }
 
 \keyword{datasets}

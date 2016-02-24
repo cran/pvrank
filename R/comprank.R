@@ -1,50 +1,67 @@
-# Compute various rank correlations
-comprank<-function (x,y=NULL,index="spearman",tiex="woodbury",sizer=1000000,repl=1000,print=TRUE){
-	 if (is.matrix(x)){
-	 	     if (!is.numeric(x)) {stop("Non-numeric argument to mathematical function")}
-	 	    w<-rep(NA,6);z<-rep(NA,7)
-	  		w[1]<-y;w[2]<-index;w[3]<-tiex;w[4]<-sizer;w[5]<-repl;w[6]<-print
-	  		for(i in 1:6){z[i+1]<-w[i]}
-	  		index<-as.character(z[2]);tiex<-as.character(z[3])
-	  		sizer<-noquote(z[5]);repl<-noquote(z[6]);print<-as.logical(noquote(z[7]))
-	  	}
-	  else {
-	  			if (length(x) != length(y)) {stop("x and y must have same length.")}
-	  			 if (!is.numeric(x) | !is.numeric(y) ) {stop("Non-numeric argument to mathematical function")}
-	  		   }
-	  ain<-c("spearman","kendall","gini","r4")
-	  tos<-c("woodbury","gh","wgh","midrank","dubois")
-	  index<-tolower(index);index<-match.arg(index, ain, several.ok = TRUE)
+comprank<-function (p, q=NULL, indr, tiex="woodbury", sizer=100000, repgin=1000, print=TRUE){
+	 if (is.matrix(p)){
+	 	    if (!is.numeric(p)) {stop("Non-numeric argument to mathematical function")}
+	 	    w<-rep(NA,5)  		
+	  		w[1]<-q;w[2]<-tiex;w[3]<-sizer;w[4]<-repgin;w[5]<-print
+	  		indr<-as.character(w[1]);tiex<-as.character(w[2])
+	  		sizer<-w[3];repl<-w[4];print<-as.logical(w[5])
+	  	    }
+	 if (!is.matrix(p)){
+	  			if (length(p) != length(q)) {stop("x and y must have same length.")}
+	  			if (!is.numeric(p) | !is.numeric(q) ) {stop("Non-numeric argument to mathematical function")}
+				}
+	  sizer<-as.integer(sizer);repgin<-as.integer(repgin)
+	  ain<-c("spearman","kendall","gini","r4","fy","filliben")
+	  tos<-c("woodbury","gh","wgh","midrank","dubois","No ties")
+	  indr<-tolower(indr);indr<-match.arg(indr, ain, several.ok = TRUE)
 	  tiex<-tolower(tiex);tiex<-match.arg(tiex, tos, several.ok = TRUE)
-	  if (((tiex=="midrank") | (tiex=="dubois")) & (index=="r4")){
-	  	cat("Combination:",index,tiex,"\n")	  	
-	  	stop("Such a feature has not yet been implemented")
+	  index<-which(ain==indr)[1];ities<-which(tos==tiex)[1]
+	  index<-as.integer(index);ities<-as.integer(ities)
+	  ifault<-0;ifault<-as.integer(ifault);n<-length(p)
+	  if (((ities==4) | (ities==5)) & index>4){
+	  	cat("Combination:",indr,tiex,"\n");stop("Such a feature is not implemented")
 	  	}
-	  if (!(is.matrix(x))){
-	  		isw<-0
-	 		nx<-length(x);ny<-length(y)
-	  		n<-max(nx,ny);p<-1:n
-	  		if (!(nx==ny)) {stop( "x and y are not of the same length")}
-      		x1<-rank(x,ties.method="average");y1<-rank(y,ties.method="average")
-	  		z<-p %in% x1;n1<-length(which(!z))
-	  		z<-p %in% y1;n2<-length(which(!z))
+	  Hilo<-vector(mode = "numeric", length = 2)
+	  Hilo<-as.double(rep(0,2));rc<-0;rc<-as.double(rc)
+	  Medun<-rep(0,n)
+	  if (index==6){k<-0
+	  		for (i in 1:n){k<-k+1;Medun[k]<-qbeta(0.5,i,n+1-i)}
+			Medun<-as.double(Medun)}
+#
+	if (!(is.matrix(p))){
+	  		isw<-0;pp<-1:n
+	  		x<-p;y<-q
+	  		p<-rank(p,ties.method="average");q<-rank(q,ties.method="average")
+	  		z<-pp %in% p;n1<-length(which(!z));z<-pp %in% q;n2<-length(which(!z))
 	  		isw<-n1+n2
-      		ties<-match(tiex,tos)
-      		if(isw==0) {ties<-6}
-      		ties<-as.integer(ties);indr<-match(index,ain)
-      		a<-DealwT(n,x1,y1,indr,ties,sizer,repl,print)
-     		r<-a$r}
-     	if (is.matrix(x)){m<-ncol(x);m1<-m-1;n<-nrow(x);p<-1:n;r<-matrix(1,m,m)
-     		for(i in 1:m1){i1<-i+1
-     			for(j in i1:m){
-     				x1<-rank(x[,i],ties.method="average");y1<-rank(x[,j],ties.method="average")
-	  				z<-p %in% x1;n1<-length(which(!z))
-	  				z<-p %in% y1;n2<-length(which(!z))
-	  				isw<-n1+n2;ties<-match(tiex,tos)
-      				if(isw==0) {ties<-6} else {cat("Tied scores are present in one or both rankings",i,j,"\n")}
-      				ties<-as.integer(ties);indr<-match(index,ain)
-      				a<-DealwT(n,x1,y1,indr,ties,sizer,repl,print)
-     				r[i,j]<-a$r; r[j,i]<-a$r
-     				}}
-     		}
-return(r)}
+      		if (isw==0) {ities<-6}
+      		p<-as.double(p);q<-as.double(q)
+      		y<-.Fortran("DealwT",n,p,q,ities,index,sizer,repgin,ifault,rc,Hilo,Medun,package="pvrank")
+	  		names(y) <- c("n", "p", "q","ities","index","sizer","repgin","ifault","rc","Hilo","Medun","package")
+	  		if(y$ifault==1) {stop("When a sequence of more than 9 tied scores are present in one or both rankings, 
+				the execution is halted")}
+	  		r<-y$rc
+      		if(abs(r)>0.9999999999) {r<-sign(r)*0.9999999999}
+      		out<-list(r=r, ities=ities)
+			return(out)}
+#
+	 if (is.matrix(p)){m<-ncol(p);m1<-m-1;n<-nrow(p)
+	   		pp<-1:n;r<-matrix(1,m,m);isw<-0
+     		for (i in 1:m1){i1<-i+1
+     			  for (j in i1:m){
+     					x1<-rank(p[,i],ties.method="average");y1<-rank(p[,j],ties.method="average")
+	  					z<-pp %in% x1;n1<-length(which(!z))
+	  					z<-pp %in% y1;n2<-length(which(!z))
+	  					isw<-n1+n2
+      					if (isw==0) {ities<-6} else {cat("Tied scores are present in one or both rankings",i,j,"\n")}
+      				     y<-.Fortran("DealwT",n,x1,y1,ities,index,sizer,repgin,ifault,rc,Hilo,Medun,package="pvrank")
+      				    names(y)<- c("n", "p", "q","ities","index","sizer","repgin","ifault","rc","Hilo","Medun","package")
+      				     if(y$ifault==1) {stop("When a sequence of more than 9 tied scores are present 
+      				     	in one or both rankings, the execution is halted")}
+     					r[i,j]<-y$rc; r[j,i]<-y$rc
+     					}}
+     		J<-which(abs(r)>0.9999999999, arr.ind = TRUE)
+			if(length(J)>0) {r[J]<-sign(r[J])*0.9999999999}
+			out<-list(r=r, ities=ities)
+		return(out)}
+	}

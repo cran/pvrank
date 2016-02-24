@@ -17,7 +17,7 @@
 }
 
 \source{
-Zou, K. H. and Tuncali, K. and Silverman, S. G. (2003). Correlation and simple linear regression. \emph{Radiology}, \bold{227}, 617-628.
+Zou, K. H. and Tuncali, K. and Silverman, S. G. (2003). "Correlation and simple linear regression". \emph{Radiology}, \bold{227}, 617--628.
 }
 
 \keyword{datasets}

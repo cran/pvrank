@@ -1,7 +1,7 @@
 \name{Atar}
 \alias{Atar}
 \docType{data}
-\title{Total Backward and Forward Output Linkage Indices}
+\title{Total backward and forward output linkage indices}
 \description{The input-output analysis is used to examine the significance and impact of tourism sector on theeconomy of Turkey and to identify whether its interaction with other sectors may enhance economic growth.}
 \usage{data(Atar)}
 \format{
@@ -20,7 +20,7 @@ A data frame with 16 observations on the following two variables. Row names indi
 }
 
 \source{
-Atan, Y. and Arslanturk, Y. (2012). Tourism and economic growth nexus: an input-output analysis in Turkey. \emph{Procedia - Social and Behavioral Sciences}. \bold{62}, 952-956.
+Atan, Y. and Arslanturk, Y. (2012). "Tourism and economic growth nexus: an input-output analysis in Turkey". \emph{Procedia - Social and Behavioral Sciences}, \bold{62}, 952--956.
 }
 
 \keyword{datasets}

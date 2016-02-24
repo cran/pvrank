@@ -7,7 +7,7 @@
 \format{
   A data frame with 16 observations on the following two variables.
   \describe{
-  	\item{Duration}{MDuration of survival (months).}
+  	\item{Duration}{Duration of survival (months).}
   	\item{Infiltration}{Lymphocytic infiltration of tumour (score).}
   	}}
 \details{The study shows a significant relationship between lymphocytic infiltration of the tumour and survival of the patient.}
@@ -17,7 +17,7 @@
 }
 
 \source{
-Lauder, I. and Aherne, A. (1972). The significance of limphocytic infiltration in neuroblastoma. \emph{British Journal of Cancer}, \bold{26}, 321-330.
+Lauder, I. and Aherne, A. (1972). "The significance of limphocytic infiltration in neuroblastoma". \emph{British Journal of Cancer}, \bold{26}, 321--330.
 }
 
 \keyword{datasets}

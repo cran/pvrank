@@ -20,7 +20,7 @@ Lost Life Expectancies and Expected Years of Life Lost calculations utilize a \e
 }
 
 \source{
-Viscusi, W. K. and Cogan, J. F. and Hakes, J.K. (1997). Measures of mortality risks.  \emph{Journal of Risk and Uncertainty}, \bold{14}, 213-233.
+Viscusi, W. K. and Cogan, J. F. and Hakes, J.K. (1997). "Measures of mortality risks".  \emph{Journal of Risk and Uncertainty}, \bold{14}, 213--233.
 }
 
 \keyword{datasets}

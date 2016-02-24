@@ -2,7 +2,7 @@
 \alias{Starshi}
 \docType{data}
 \title{Policy-related determinants of health}
-\description{International comparisons can provide clues to understanding some of the important policy-related determinants of health, including those related to the provision of health care services.}
+\description{International comparisons can provide clues to understanding some of the important policy-related determinants of health including those related to the provision of health care services.}
 \usage{data(Starshi)}
 \format{
 A data frame with 13 observations on the following two variables.
@@ -21,7 +21,7 @@ A data frame with 13 observations on the following two variables.
 }
 
 \source{
-Starfield, B. and Shi, L. (2002). Policy relevant determinants of health: an international perspective. \emph{Health Policy}, \bold{60}, 201-218.
+Starfield, B. and Shi, L. (2002). "Policy relevant determinants of health: an international perspective". \emph{Health Policy}, \bold{60}, 201--218.
 }
 
 \keyword{datasets}

@@ -7,7 +7,7 @@
 \arguments{
  \item{p}{a numeric vector.}  
  \item{q}{a numeric vector with compatible dimension to \eqn{p}.}  
- \item{index}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman","kendall","gini", "r4", "fy" (Fisher-Yates correlation), and "filliben" (Filliben's rank correlation). Only enough of the string to be unique is required.}  
+ \item{index}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman","kendall","gini", "r4", "fy" (Fisher-Yates correlation), and "fa" (Filliben-Amerise rank correlation). Only enough of the string to be unique is required.}  
  \item{approx}{a character string that specifies the type of approximation to the null distribution. Acceptable values are: "vggfr", "exact","gaussian" and "student". Only enough of the string to be unique is required. Exact computations use frequencies precomputed and stored in specific look-up tables.} 
  \item{tiex}{a character string that specifies the method for breaking ties. Possible options are: "woodbury", "gh","wgh", "midrank", "dubois". Only enough of the string to be unique is required. Ignored if there are no equal scores.}
  \item{CC}{if true, a continuity correction is applied.}
@@ -65,7 +65,7 @@ detach(Lambh)
 data(Security);attach(Security)
 rankor(AP,OV,"sp","ga","gh",FALSE,"greater",TRUE)
 rankor(MP,AP,"fy","ga","gh",FALSE,"greater",TRUE)
-rankor(OV,MP,"fil","ga","gh",FALSE,"greater",TRUE)
+rankor(OV,MP,"fa","ga","gh",FALSE,"greater",TRUE)
 detach(Security)
 #####
 #
@@ -191,7 +191,7 @@ op<-par(mfrow=c(1,2))
 par(op)
 out<-rankor(Age,CCO,"g","st","gh",FALSE,"two")
 cat(out$Value,out$Cpv,"\n")
-out<-rankor(BW,CCO,"Fil","st","gh",FALSE,"two")
+out<-rankor(BW,CCO,"fa","st","gh",FALSE,"two")
 detach(Femurs)
 }
 #####
@@ -204,7 +204,7 @@ abline(h=mean(Frq),col="black",lty=2,lwd=1)
 abline(v=mean(Vol),col="black",lty=2,lwd=1)
 par(op)
 Evar<-function(A){
-	index<-c("s","k","g","r4","fy","fil");approx<-c("ex","ga","st","vg")
+	index<-c("s","k","g","r4","fy","fa");approx<-c("ex","ga","st","vg")
 	for (ind in index){for(app in approx){rankor(A[,1],A[,2],ind,app,"wgh",FALSE,
 			                   "less",TRUE)}}}
 Evar(FrigateB)
@@ -215,11 +215,11 @@ detach(FrigateB)
 \dontrun{
 All.index<-function(X,type){
 # Computes the observed rank correlation statistics and their p-values.
-	Index<-c("spearman","kendall","gini","r4","fy","filliben")
+	Index<-c("spearman","kendall","gini","r4","fy","fa")
 	n<-nrow(X);A<-matrix(0,6,6)
 	colnames(A)<-c(" Observed","  t-Student","  Gaussian","  VGGFR",
 	"Exact Cons."," Exact Lib.")
-	rownames(A)<-c("Spearman","Kendall ","Gini ","   r4", "Fisher-Yates"," Filliben")
+	rownames(A)<-c("Spearman","Kendall ","Gini ","   r4", "Fisher-Yates"," fa")
 	for (i in 1:6){
 		a<-rankor(X[,1],X[,2],Index[i],"St","woodbury",FALSE,type,FALSE)
 		r<-a$Value;A[i,2]<-a$Cpv

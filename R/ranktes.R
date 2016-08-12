@@ -10,7 +10,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 	 if (abs(r)>1) {cat("Observed value: ",r,"\n")
 	 					 stop("The value of the rank correlation should range between 1 to -1")}
 	 cifer<-9;options(digits=9)
-	 ain<-c("spearman","kendall","gini","r4","fy","filliben")
+	 ain<-c("spearman","kendall","gini","r4","fy","fa")
 	 apx<-c("gaussian","student","vggfr","exact")
 	 alter<-c("two-sided", "greater","less")
 	 index<-tolower(index);approx<-tolower(approx);type=tolower(type)
@@ -22,11 +22,11 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 	 mpfr_default_prec(opr)
 	 ksw<-FALSE
 	 if ((index=="spearman" & n>26) | (index=="kendall" & n>60) | (index=="gini" & n>24)) {ksw<-TRUE}
-	 if ((index=="r4" & n>15) | (index=="fy" & n>15) | (index=="filliben" & n>15)) {ksw<-TRUE}
+	 if ((index=="r4" & n>15) | (index=="fy" & n>15) | (index=="fa" & n>15)) {ksw<-TRUE}
 	 if (approx=="exact" & ksw){
 		    cat("The exact p-value is not available yet. An approximate p-value is computed \n")
 			if (index=="r4") {approx<-"vggfr"}
-			if (index=="fy" | index=="filliben") {approx<-"gaussian"}
+			if (index=="fy" | index=="fa") {approx<-"gaussian"}
 			if (index=="spearman" |index=="kendall") {approx<-"gaussian"}
 			if (index=="gini") {approx<-"student"}
 			}
@@ -58,10 +58,10 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 			S1<-trunc(C37*r*nu*nm1)
 			if (S1<0){sig<- 1} else {sig<- -1}
 			ccf<- sig*C39/(nu*nm1)}
-	 if (CC & index=="r4"| index=="fy" | index=="filliben") {ccf<-0} 
+	 if (CC & index=="r4"| index=="fy" | index=="fa") {ccf<-0} 
 	 rc<-mpfr(r,320)-ccf;r<-asNumeric(rc) 
 	 Medun<-rep(0,n)
-	 if (index=="filliben"){k<-0
+	 if (index=="fa"){k<-0
 	  		for (i in 1:n){k<-k+1;Medun[k]<-qbeta(0.5,i,n+1-i)}
 			Medun<-as.double(Medun)}
 	if (approx=="exact") {rc<- -abs(rc)}
@@ -78,7 +78,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 			 	if ("kendall" == index) {zx<-rc*sqrt((C6*nu*nm1)/(C21*nu+C35));estat<-"Kendall's tau"}	
 		 		if ("r4" == index) {zx<-rc*sqrt(C32)*sqrt(nm1);estat<-"r4"}
 		 		if ("fy"==index){estat<-"Fisher-Yates coefficient";zx<-rc*sqrt(nm1)}
-		 		if ("filliben"==index){estat<-"Filliben's rank correlation";zx<-rc*sqrt(nm1)}					
+		 		if ("fa"==index){estat<-"Filliben-Amerise rank correlation";zx<-rc*sqrt(nm1)}					
 				if (type=="two-sided") {Pv<-2*pnorm(-as.numeric(abs(zx)), mean = 0, sd=1)}
 		 		if (!(type=="two-sided")) {Pv<-pnorm(-as.numeric(abs(zx)), mean = 0, sd=1)}
 		 		if((r<=0  & type=="greater") | (r>0 & type=="less")) {Pv<-1-Pv}
@@ -106,9 +106,9 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 			 	if ("r4" == index){estat<-"r4"
 						    ws1<-(nu-C32)/C33;zx<-C39*ws1/(C34-rc^2);rcp<-abs(rc)*sqrt(zx)
 							Lamx<-trunc(C39*ws1)}									   				   										   
-		 		if ("fy"== index){estat<-"Fisher_Yates coefficient"
+		 		if ("fy"== index){estat<-"Fisher-Yates coefficient"
 							zx<-nm2/(C34-rc^2);rcp<- abs(rc)*sqrt(zx);Lamx<-nm2}
-			    if ("filliben"== index){estat<-"Filliben's rank correlation"
+			    if ("fa"== index){estat<-"Filliben-Amerise rank correlation"
 							zx<-nm2/(C34-rc^2);rcp<- abs(rc)*sqrt(zx);Lamx<-nm2}
 				Lamx<-asNumeric(Lamx);rcp<-asNumeric(rcp)
 				if (type=="two-sided") {Pv<-2*pt(-rcp,Lamx)}
@@ -153,7 +153,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 												k4<-n*((n+1)*k2b-(3*(n-1)/n)*k2a^2)/(n-1)/(n-2)/(n-3)
 												k4a<-3*(n-1)/(n+1)+((n-2)*(n-3)/(n*(n^2-1)))*(k4/k2^2)^2
 												k4a<-k4a/(n-1)/(n-1);mu4n<-mpfr(k4a,320)}
-				if ("filliben"== index){estat<-"Filliben's rank correlation";icoef<-6
+				if ("fa"== index){estat<-"Filliben-Amerise rank correlation";icoef<-6
 											    mu2n<-C34/nm1;EvosG<-rep(0,n);ix<-n%%2
 												if(ix==0){n2<-n/2} else {n2<-(n+1)/2}
   												for (i in 1:n2){
@@ -226,24 +226,25 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 					    XX<-as.matrix(XX,ncol = 2, byrow = TRUE)
 						a<-noquote(XX[,1]);b<-noquote(XX[,2])
 						B<-cbind(mpfr(a,320),mpfr(b,320))
-					    B[,1]<-B[,1]/10000;ws1<-sum(as.numeric(B[,2]))
+					    B[,1]<-B[,1]/10000
+					    ws1<-sum(as.numeric(B[,2]))
 					    B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}						
- 		 if ("filliben" == index) {estat<-"Filliben's rank correlation"
+ 		 if ("fa" == index) {estat<-"Filliben-Amerise rank correlation"
 		 				fname<-paste("Fil",n,".txt.zip",sep="")
 						gname<-paste("Fil",n,".txt",sep="")
 						XX <- read.table(unz(system.file(package="pvrank","extdata", fname), gname), header=F)
 						XX<-as.matrix(XX,ncol = 2, byrow = TRUE)
-						B<-cbind(mpfr(XX[,1],320),mpfr(XX[,2],320))
-						B[,1]<-B[,1]/10000;ws1<-sum(as.numeric(B[,2]))
+						a<-noquote(XX[,1]);b<-noquote(XX[,2])
+						B<-cbind(mpfr(a,320),mpfr(b,320))
+						B[,1]<-B[,1]/10000
+						ws1<-sum(as.numeric(B[,2]))
 						B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}							
 # 			
 		 if (type=="two-sided") {
 		 		j1<-which(B[,1]<=rc)[length(which(B[,1]<=rc))];j2<-which(B[,1]>=rc)[1]
 		    	ws1<-C39*B[j1,2];ws2<-C39*B[j2,2]
 		    	if (ws2>1) {ws2<-1}
-		    	Cpv<-ws1;Lpv<-ws2
-		    	Cpv<-formatMpfr(Cpv,digits=cifer);Lpv<-formatMpfr(Lpv,digits=cifer)
-		    	}
+		    	Cpv<-ws1;Lpv<-ws2}
 		if (!(type=="two-sided")){
 				j1<-which(B[,1]<=rc)[length(which(B[,1]<=rc))]
 				j2<-which(B[,1]>rc)[1]
@@ -262,5 +263,6 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
  	 				type, "Corr. Cont.",CC,"\n")
 			        cat(" Conservative p-value:",noquote(sprintf("%.6f",c1))," Liberal p-value:",
 			        noquote(sprintf("%.6f",c2)),"\n")}
+			        
   		outrank<-list(n=n,Statistic=estat,Value=r,approx=eappr,tails=type,Cpv=c1,Lpv=c2)
 return(outrank)}

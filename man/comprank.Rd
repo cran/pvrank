@@ -7,8 +7,8 @@
 \arguments{
 \item{p}{a numeric vector, matrix or data frame.}
 \item{q}{NULL (default) or a vector with compatible dimensions to \eqn{p}.}
-\item{indr}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman", "kendall", "gini","r4", "fy" (Fisher-Yates correlation), "filliben" (Filliben rank correlation). Only enough of the string to be unique is required.}
-\item{tiex}{a character string that specifies the method for breaking ties. Possible options are: "woodbury", "gh","wgh", "midrank","dubois". Only enough of the string to be unique is required. This option is ignored when ties are absent. The options: \code{"midrank"} and \code{"dubois"} are also ignored in the calculation of \eqn{r_4}, Fisher-Yates and Filliben.}
+\item{indr}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman", "kendall", "gini","r4", "fy" (Fisher-Yates correlation), "fa" (Filliben-Amerise rank correlation). Only enough of the string to be unique is required.}
+\item{tiex}{a character string that specifies the method for breaking ties. Possible options are: "woodbury", "gh","wgh", "midrank","dubois". Only enough of the string to be unique is required. This option is ignored when ties are absent. The options: \code{"midrank"} and \code{"dubois"} are also ignored in the calculation of \eqn{r_4}, Fisher-Yates and Filliben-Amerise.}
 \item{sizer}{number of replications for resolving ties by randomization. Default value: \eqn{10^5}.}
 \item{repgin}{number of sampled pairs of permutations needed to apply the weighted max-min method (wgh). Default value: \eqn{10^3}.}
 \item{print}{if \code{FALSE} suppresses some of the output.}
@@ -39,12 +39,11 @@ where \eqn{k_n} is zero if \eqn{n} is even and one if \eqn{n} is odd. The functi
 Two other admissible coefficients are:
 
 \deqn{Fisher-Yates: r_5=\frac{\sum_{i=1}^n \xi(p_i|n)\xi(q_i|n)}{\sum_{i=1}^n \xi(p_i|n)^2}}
-\deqn{Filliben: r_6=\frac{\sum_{i=1}^n \zeta(p_i|n)\zeta(q_i|n)}{\sum_{i=1}^n \zeta(p_i|n)^2}}
+\deqn{Filliben-Amerise: r_6=\frac{\sum_{i=1}^n \zeta(p_i|n)\zeta(q_i|n)}{\sum_{i=1}^n \zeta(p_i|n)^2}}
 
-The expression \eqn{\xi(p_i|n)} denotes the expected values of the i-th largest standardized deviate in a sample of size \eqn{n} from a standad Gaussian population. See, for example, function evNormOrdStats in package \code{EnvStats}, Millard (2013). An implementation of the Gaussian rank correlation coefficient is given in the \code{rococo} package. See Bodenhofer et al. (2013). Finally, \eqn{\zeta(p_i|n)} is the i-th order statistic median from a standard Gaussian distribution. These medians \eqn{\zeta(p_i|n)} are exactly related to the order statistic medians \eqn{m_i} from a uniform distribution on \eqn{[0,1]}, that is,  \eqn{\zeta(p_i|n)=\Phi^{-1}(m_i)} where \eqn{\Phi^{-1}(x)} is the quantile function of the standard Gaussian cumulative distribution function. The medians of the order statistics from a unit uniform distribution are given by \eqn{m_i=B^{-1}(0.5,i,n+1-i)} where \eqn{B^{-1}(x,a,b)} denotes the inverse Beta distribution with parametes \eqn{a,b} evaluated at the percentage \eqn{x}. Fortunately, \eqn{B^{-1}(,)} is a standard function: \code{qbeta} in package \code{stats}.
-See Tarsitano & Amerise (2016) and Amerise & Tarsitano (2016).
+The expression \eqn{\xi(p_i|n)} denotes the expected values of the i-th largest standardized deviate in a sample of size \eqn{n} from a standad Gaussian population. See, for example, function evNormOrdStats in package \code{EnvStats}, Millard (2013). An implementation of the Gaussian rank correlation coefficient is given in the \code{rococo} package. See Bodenhofer et al. (2013). Finally, \eqn{\zeta(p_i|n)} is the i-th order statistic median from a standard Gaussian distribution. These medians \eqn{\zeta(p_i|n)} are exactly related to the order statistic medians \eqn{m_i} from a uniform distribution on \eqn{[0,1]}, that is,  \eqn{\zeta(p_i|n)=\Phi^{-1}(m_i)} where \eqn{\Phi^{-1}(x)} is the quantile function of the standard Gaussian cumulative distribution function. The medians of the order statistics from a unit uniform distribution are given by \eqn{m_i=B^{-1}(0.5,i,n+1-i)} where \eqn{B^{-1}(x,a,b)} denotes the inverse Beta distribution with parametes \eqn{a,b} evaluated at the percentage \eqn{x}. Fortunately, \eqn{B^{-1}(,)} is a standard function: \code{qbeta} in package \code{stats}. See Tarsitano & Amerise (2016) and Amerise & Tarsitano (2016).
 
-	In the absence of ties \eqn{r_1, r_2, r_3} can assume \eqn{(n^3-n)/6+1}, \eqn{(n^2-n)/2+1}, \eqn{(n^2-k_n)/2+1} distinct values, respectively. The coefficient \eqn{r_4} can assume a number of different values of the order \eqn{0.25n!} more or less uniformly spaced from each other. When \eqn{n>3}, \eqn{r_1} can be zero if, and only if, \eqn{n} is not of the form \eqn{n=4m+2} where \eqn{m} is a positive integer. The quantity \eqn{S_2} is even if, and only if, \eqn{n=4m} or \eqn{n=4m+1}; \eqn{S_2} only takes on an odd value if \eqn{n} is not in that form. For \eqn{n>3}, zero is always a value of \eqn{r_3}.  If \eqn{n\ge5}, coefficient \eqn{r_4} fails to be zero for \eqn{n=7}. The number of distinct values of  \eqn{r_5} and  \eqn{r_6} is only limited by the number of bits used in the representation of float-point values in a computer.
+	In the absence of ties \eqn{r_1, r_2, r_3} can assume \eqn{(n^3-n)/6+1}, \eqn{(n^2-n)/2+1}, \eqn{(n^2-k_n)/2+1} distinct values, respectively. The coefficient \eqn{r_4} can assume a number of different values of the order \eqn{0.25n!} more or less uniformly spaced from each other. When \eqn{n>3}, \eqn{r_1} can be zero if, and only if, \eqn{n} is not of the form \eqn{n=4m+2} where \eqn{m} is a positive integer. The quantity \eqn{S_2} is even if, and only if, \eqn{n=4m} or \eqn{n=4m+1}; \eqn{S_2} only takes on an odd value if \eqn{n} is not in that form. For \eqn{n>3}, zero is always a value of \eqn{r_3}.  If \eqn{n\ge5}, coefficient \eqn{r_4} fails to be zero for \eqn{n=7}. The number of distinct values of \eqn{r_5} and \eqn{r_6} is only limited by the number of bits used in the representation of float-point values in a computer.
 
 	Equal values are common when rank methods are applied to rounded data or data consisting solely of small integers. A popular technique for resolving ties in rank correlation is the mid-rank method: the mean of the rankings remain unaltered, but the variance is reduced and changes according to the number and location of ties.
 
@@ -62,7 +61,7 @@ See Tarsitano & Amerise (2016) and Amerise & Tarsitano (2016).
 
 Amerise, I. L. and Tarsitano, A. (2014). Correction methods for ties in rank correlations. \emph{Journal of Applied statistics}, \bold{42}, 1--13.
 
-Amerise, I. L. and Tarsitano, A. (2016). A re-edition of the probability plot correlation coefficient leading to a new rank correlation. Submitted.
+Amerise, I. L. and Tarsitano, A. (2016). A new symmetrical test of bivariate independence. Submitted.
   
 Bodenhofer, U. et al. (2013). "Testing noisy numerical data for monotonic association". \emph{information Sciences}, \bold{245}, 21--37.
 
@@ -130,7 +129,7 @@ b<-comprank(Viscoh,"r4","gh",print=FALSE)
 print(b$r);cat(" method:", b$ities,"\n")
 c<-comprank(Viscoh,"fy","wgh",print=FALSE)
 print(c$r);cat("method:", c$ities,"\n")
-d<-comprank(Viscoh,"fil","wgh",print=FALSE)
+d<-comprank(Viscoh,"fa","wgh",print=FALSE)
 print(d$r);cat(" method:", d$ities,"\n")
 detach(Viscoh)
 #####
@@ -151,16 +150,19 @@ r.cofint <- function(r, n, index, Level=.95) {
 	asd[2]<-sqrt((4*n+10)/(9*n*(n-1))) # Kendall
 	asd[3]<-1/sqrt(1.5*n) # Gini
 	asd[4]<-1/sqrt(1.00762*(n-1)) # r4
-	# Fisher-Yates and Filliben
+	# Fisher-Yates and Filliben-Amerise
 	if(index<=4) {zse<-r*asd[index]} else {zse<-atan(r*(1-0.6/(n+8)))/sqrt(n-3)} 
 	rlow <- r - zse * qnorm((1-Level)/2,lower.tail=FALSE);rlow<-max(-1,rlow)
  	rupp <- r + zse * qnorm((1-Level)/2,lower.tail=FALSE);rupp<-min(1,rupp)
  	out<-list(Lower.r=rlow, Upper.r=rupp)
  	return(out)
 }
-## Rajalingam S. and Zeya O. "Summative assessments by Spearman`s correlation
+#
+# Rajalingam S. and Zeya O. "Summative assessments by Spearman`s correlation
+
 # coefficient: a case study. in enhancing learning: teaching & learning international 
 # conference. Nov 24-26 2011. Miri, Sarawak: Curtin University
+
 FA=c(39.09,39.77,35.62,34.69,34.42,35.57,35.94,38.68,38.41,36.4,37.95,37.03,38.03,
 35.5,38.55,30.68,26.3,36.28)
 SA=c(27.5,34,24,24,17,17.5,16.5,26,25.5,28.5,26.5,13,12.5,9.5,28.5,23,24.5,22)
@@ -173,7 +175,7 @@ text(FA,SA,label=1:n,cex=0.8,pos=2)
 abline(h=mean(SA),col="darkblue",lty=2,lwd=1)
 abline(v=mean(FA),col="darkblue",lty=2,lwd=1)
 par(op)
-rct<-c("spearman","kendall","gini","r4", "fy","filliben")
+rct<-c("spearman","kendall","gini","r4", "fy","fa")
 for (index in 1:6){
 	r<-comprank(FA,SA,rct[index])$r
 	cir<-r.cofint(r,n,index,Level=0.99)
@@ -195,7 +197,7 @@ out2<-comprank(x,y,"k","woodbury")
 out3<-comprank(x,y,"g","woodbury")
 out4<-comprank(x,y,"r4","woodbury")
 out5<-comprank(x,y,"fy","woodbury")
-out6<-comprank(x,y,"fil","woodbury")
+out6<-comprank(x,y,"fa","woodbury")
 ind<-c(out1$r,out2$r,out3$r,out4$r,out5$r,out6$r)
 cat(out1$ities,"\n")
 print(round(ind,5))
@@ -223,7 +225,7 @@ r2<-comprank(Radiation,"kendall","midrank",print=FALSE);eigen(r2$r)
 r3<-comprank(Radiation,"gini","midrank",print=FALSE);eigen(r3$r)
 r4<-comprank(Radiation,"r4","gh",print=FALSE);eigen(r4$r)
 r5<-comprank(Radiation,"fy","gh",print=FALSE);eigen(r5$r)
-r6<-comprank(Radiation,"fil","gh",print=FALSE);eigen(r6$r)
+r6<-comprank(Radiation,"fa","gh",print=FALSE);eigen(r6$r)
 detach(Radiation)
 #####
 #
@@ -241,7 +243,7 @@ cor1<-comprank(Marozzi,"r4","wgh",print=FALSE)
 print(round(cor1$r,3))
 cor1<-comprank(Marozzi,"fy","wgh",print=FALSE)
 print(round(cor1$r,3))
-cor1<-comprank(Marozzi,"fil","wgh",print=FALSE)
+cor1<-comprank(Marozzi,"fa","wgh",print=FALSE)
 print(round(cor1$r,3))
 detach(Marozzi)
 }

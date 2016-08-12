@@ -11,16 +11,13 @@ comprank<-function (p, q=NULL, indr, tiex="woodbury", sizer=100000, repgin=1000,
 	  			if (!is.numeric(p) | !is.numeric(q) ) {stop("Non-numeric argument to mathematical function")}
 				}
 	  sizer<-as.integer(sizer);repgin<-as.integer(repgin)
-	  ain<-c("spearman","kendall","gini","r4","fy","filliben")
+	  ain<-c("spearman","kendall","gini","r4","fy","fa")
 	  tos<-c("woodbury","gh","wgh","midrank","dubois","No ties")
 	  indr<-tolower(indr);indr<-match.arg(indr, ain, several.ok = TRUE)
 	  tiex<-tolower(tiex);tiex<-match.arg(tiex, tos, several.ok = TRUE)
 	  index<-which(ain==indr)[1];ities<-which(tos==tiex)[1]
 	  index<-as.integer(index);ities<-as.integer(ities)
 	  ifault<-0;ifault<-as.integer(ifault);n<-length(p)
-	  if (((ities==4) | (ities==5)) & index>4){
-	  	cat("Combination:",indr,tiex,"\n");stop("Such a feature is not implemented")
-	  	}
 	  Hilo<-vector(mode = "numeric", length = 2)
 	  Hilo<-as.double(rep(0,2));rc<-0;rc<-as.double(rc)
 	  Medun<-rep(0,n)
@@ -35,6 +32,8 @@ comprank<-function (p, q=NULL, indr, tiex="woodbury", sizer=100000, repgin=1000,
 	  		z<-pp %in% p;n1<-length(which(!z));z<-pp %in% q;n2<-length(which(!z))
 	  		isw<-n1+n2
       		if (isw==0) {ities<-6}
+      		if (((ities==4) | (ities==5)) & index>4){
+	  			cat("Combination:",indr,tiex,"\n");stop("Such a feature is not implemented")}
       		p<-as.double(p);q<-as.double(q)
       		y<-.Fortran("DealwT",n,p,q,ities,index,sizer,repgin,ifault,rc,Hilo,Medun,package="pvrank")
 	  		names(y) <- c("n", "p", "q","ities","index","sizer","repgin","ifault","rc","Hilo","Medun","package")
@@ -54,6 +53,8 @@ comprank<-function (p, q=NULL, indr, tiex="woodbury", sizer=100000, repgin=1000,
 	  					z<-pp %in% y1;n2<-length(which(!z))
 	  					isw<-n1+n2
       					if (isw==0) {ities<-6} else {cat("Tied scores are present in one or both rankings",i,j,"\n")}
+      					if (((ities==4) | (ities==5)) & index>4){
+	  								cat("Combination:",indr,tiex,"\n");stop("Such a feature is not implemented")}
       				     y<-.Fortran("DealwT",n,x1,y1,ities,index,sizer,repgin,ifault,rc,Hilo,Medun,package="pvrank")
       				    names(y)<- c("n", "p", "q","ities","index","sizer","repgin","ifault","rc","Hilo","Medun","package")
       				     if(y$ifault==1) {stop("When a sequence of more than 9 tied scores are present 

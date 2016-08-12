@@ -76,7 +76,7 @@ for (L1 in La){VGGFR(2,L1,add=TRUE, lwd = 1, lty = 1, col=gray(L1/6))}
 #####
 # 
 # A family of GGFR curves
-VGGFR(1,2,, lwd = 1, lty = 1,col="black",ylim=c(0,5))
+VGGFR(1,2, lwd = 1, lty = 1,col="black",ylim=c(0,5))
 La<-seq(1,6,0.5);Lg<-seq(0,1,1/12)
 for (L1 in La){
 		c2<-gray(Lg, alpha= 2/6)

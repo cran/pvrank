@@ -1,6 +1,7 @@
 qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.tail=TRUE){
 	if (!is.numeric(prob)| !is.numeric(n)) {stop("Non-numeric argument to mathematical function")}
-	if (!(prob>=0 & prob<=1)) {stop("The nominal significance level must satisfy 0<=prob<=1)");print(prob)}
+	if (!(prob>=0 & prob<=1)) {stop("The nominal significance level must satisfy 0<=prob<=1)")
+											 print(prob)}
 	nn<-floor(n);cifer<-9
 	if(n<0) {stop("A negative number of ranks is indicated")}
 	if(!(nn==n)) {warning("A non integer number of ranks is indicated. A truncation is necessary.");n<-nn}
@@ -31,10 +32,11 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 	C18<-mpfr(912,320);C19<-mpfr(1248,320);C20<-mpfr(107,320);C21<-mpfr(4,320)
 	C22<-mpfr(76,320);C23<-mpfr(182,320);C24<-mpfr(307,320);C25<-mpfr(315,320)
 	C26<-mpfr(342,320);C27<-mpfr(420,320);C28<-mpfr(315,320);C29<-mpfr(105,320)
-	C30<-mpfr(6,320);C32<-mpfr(1.00762,320);C33<-mpfr(2.01524,320);C34<-mpfr(1,320);C35<-mpfr(10,320)
-	C36<-mpfr(3,320);C37<-mpfr(2,320);C38<-mpfr(8,320);C39<-mpfr(0.5,320);C40<-mpfr(1.5,320)	
+	C30<-mpfr(6,320);C32<-mpfr(1.00762,320);C33<-mpfr(2.01524,320);C34<-mpfr(1,320)
+	C35<-mpfr(10,320);C36<-mpfr(3,320);C37<-mpfr(2,320);C38<-mpfr(8,320)
+	C39<-mpfr(0.5,320);C40<-mpfr(1.5,320)	
 #
-	nu<-mpfr(n,320);nm1<-nu-C34;nm2<-nu-C37;nm3<-nu-C36
+	nu<-mpfr(n,320);nm1<-nu-C34;nm2<-nu-C37;nm3<-nu-C36;np1=nu+C34
 	kn<-n%%2;kkn<-mpfr(kn,320)
 	if (approx=="vggfr"){eappr<-"VGGFR"
 		    a<-ranktes(0.0,n,index,"vggfr",F,"less",F)
@@ -49,20 +51,19 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 	 if (approx=="student"){eappr<-"t-Student"
 	 		 if (prob<1e-323){prob<-1e-323}
 			 if (index=="spearman"){Lamx<-nm2
-			 		Tx<-qt(prob, asNumeric(Lamx));a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}			 	 		  	 		  			 	 		  	
- 			 if (index=="gini"){z1<-C36*nm1*(nu^2-kkn);z2<-C37*(nu^2+C37+kkn)
+			 		Tx<-qt(prob, asNumeric(Lamx));a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
+			 if (index=="gini"){z1<-C36*nm1*(nu^2-kkn);z2<-C37*(nu^2+C37+kkn)
  			 		Lm<-C39*(z1/z2 -C34);Lamx<-C37*ceiling(Lm+C39)
 		  	    	Tx<-qt(prob,asNumeric(Lamx))
-		  	    	a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}			  	    							   		  	    							   		  	    				
-			 if (index=="kendall"){z1<-(C21*nu+C35)/(C6*nu*nm1);Lm<-C39*(C34/z1-C34)
+		  	    	a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}			  	    							   		  	    							   		  	
+		  	if (index=="kendall"){z1<-(C21*nu+C35)/(C6*nu*nm1);Lm<-C39*(C34/z1-C34)
 			 	    Lamx<-C37*ceiling(Lm+C39);Tx<-qt(prob, asNumeric(Lamx))
 			 		a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}			 								 			 				
 		     if (index=="r4") {Lamx<-ceiling((nu-C33)/C32)
 		     		Tx<-qt(prob, asNumeric(Lamx))
 		     		a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
-		     if (index=="fy"){Lamx<-nm2
-			 		Tx<-qt(prob, asNumeric(Lamx)); a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
-			 if (index=="filliben"){Lamx<-nm2
+		     if (index=="fy"| index=="filliben" ){
+		     		Lamx<-nm2
 			 		Tx<-qt(prob, asNumeric(Lamx)); a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
 			if (prob>0.5){rc<- -rc}	
 			 }	
@@ -92,7 +93,6 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 		return(outrank)}
 ##
 	eappr<-"Exact"
-	nu<-mpfr(n,320);nm1<-nu-1;nm2<-nu-2;nm3<-nu-3;np1=nu+1
 	if  ("kendall" == index) {estat<-"Kendall's tau"
 		 				Cs1<-C37/(nu^2-nu)
 		 				fname<-paste("Kend",n,".txt.zip",sep="")

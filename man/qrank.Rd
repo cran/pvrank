@@ -9,15 +9,15 @@
   \item{prob}{the nominal level of significance.} 
   \item{n}{the number of ranks.}
   \item{index}{a character string that specifies the rank correlation used in the test. Acceptable values are:
-  "spearman","kendall","gini","r4","fy","filliben". Only enough of the string to be unique is required.}
+  "spearman","kendall","gini","r4","fy","fa". Only enough of the string to be unique is required.}
   \item{approx}{a character string that specifies the type of approximation to the null distribution: "vggfr", "exact","gaussian","student".} 
   \item{print}{\code{FALSE} suppresses partial output.}
   \item{lower.tail}{logical; if \code{TRUE} (default), probability \eqn{P [X\leq x]}{ P[X <= x]} is computed, otherwise \eqn{P[X>x]}{P[X>x]}. In brief, lower tailed tests are used to test for negative correlation and upper tailed tests are used to test for positive correlation.}  
 }
 \details{
-This routine provides two exact quantiles corresponding to a conservative level (next smaller exact size) and a liberal level (next larger exact size). However, in the case of \eqn{n>26} (Spearman) or \eqn{n>60} (Kendall) or \eqn{n>24} (Gini) or \eqn{n>15} (\eqn{r_4}, Fisher-Yates coefficient and Filliben rank correlation), an approximated, but unique quantile is produced according to \code{approx}. The default option is \code{"vggfr"} in the case of Spearman and \eqn{r_4}; \code{"gaussian"} for Kendall, "fy", and "filliben"; \code{"student"} for Gini's cograduation. 
+This routine provides two exact quantiles corresponding to a conservative level (next smaller exact size) and a liberal level (next larger exact size). However, in the case of \eqn{n>26} (Spearman) or \eqn{n>60} (Kendall) or \eqn{n>24} (Gini) or \eqn{n>15} (\eqn{r_4}, Fisher-Yates coefficient and Filliben-Amerise rank correlation), an approximated, but unique quantile is produced according to \code{approx}. The default option is \code{"vggfr"} in the case of Spearman and \eqn{r_4}; \code{"gaussian"} for Kendall, "fy", and "fa"; \code{"student"} for Gini's cograduation. 
 
-Exact computations use frequencies obtained by complete enumeration for Spearman's \eqn{r_1}, Gini's \eqn{r_2}, \eqn{r_4}, \eqn{r_5} (Fisher-Yates coefficient), and \eqn{r_6} (Filliben rank correlation). A recursive formula is employed in the case of Kendall's \eqn{r_3}.
+Exact computations use frequencies obtained by complete enumeration for Spearman's \eqn{r_1}, Gini's \eqn{r_2}, \eqn{r_4}, \eqn{r_5} (Fisher-Yates coefficient), and \eqn{r_6} (Filliben-Amerise rank correlation). A recursive formula is employed in the case of Kendall's \eqn{r_3}.
 
 }
 \value{a list containing the following components:

@@ -7,9 +7,9 @@
 \arguments{
   \item{r}{the value of the test statistic.} 
   \item{n}{the number of ranks.}
-  \item{index}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman","kendall","gini","r4", "fy" (that is, Fisher-Yates correlation) and "filliben" (Filliben rank correlation). Only enough of the string to be unique is required.}  
+  \item{index}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman","kendall","gini","r4", "fy" (that is, Fisher-Yates correlation) and "fa" (Filliben-Amerise rank correlation). Only enough of the string to be unique is required.}  
   \item{approx}{a character string that specifies the type of approximation to the null distribution of the statistic required in \code{index}: "vggfr", "exact","gaussian","student". Only enough of the string to be unique is required.}  
- \item{CC}{if true, a continuity correction is applied. Ignored if \code{approx= "exact"} or if \code{index="r4"} or if \code{index="fy"} or if \code{index="filliben"}.}
+ \item{CC}{if true, a continuity correction is applied. Ignored if \code{approx= "exact"} or if \code{index="r4"} or if \code{index="fy"} or if \code{index="fa"}.}
  \item{type}{type of alternative hypothesis. The options are \code{"two-sided"} (independence), 
    \code{"greater"} (concordance) or \code{"less"} (discordance). Only enough of the string to be unique is required.}
 \item{print}{\code{FALSE} suppresses some of the output.}
@@ -37,7 +37,7 @@ Upon computing \eqn{r_h}, it is common practice to determine whether the value  
 
 	It is important to note that, as correctly observe Iman and Conover (1978), the discreteness of rank correlations often leads into situations where no critical region has exactly the size \eqn{\alpha}. If \code{approx}\code{="exact"}  the routine provides the next smaller exact size called conservative \eqn{p}-value or the next larger exact size called liberal \eqn{p}-value. A test can be considered conclusive if both the conservative and the liberal significance levels lie on the same side with respect of \eqn{\alpha}. Compared to an exact \eqn{p}-value, a conservative \eqn{p}-value tends to understate the evidence against \eqn{H_0}, whereas a liberal \eqn{p}-value tends to overstate it.
 
-If \code{approx}\code{="exact"} then \code{ranktes} uses precomputed exact null distributions. In particular, \eqn{n\le 26} for \eqn{r_1} (see Gustafson, 2009); \eqn{n\le 24} for \eqn{r_3} (see Girone et al. 2010). We have obtained the null distribution of \eqn{r_4}, \eqn{r_5} and \eqn{r_6} for \eqn{n\le 15} by calculating rank correlations for all the \eqn{n!} permutations of the integers \eqn{1,2, \cdots, n}.  Kendall's \eqn{r_2} benefits from a recurrence relationship (Panneton and Robillard, 1972) that can handle \eqn{r_2} for \eqn{n} up \eqn{60}. In this regard, it is very useful the package \code{Mpfr}.
+If \code{approx}\code{="exact"} then \code{ranktes} uses precomputed exact null distributions. In particular, \eqn{n\le 26} for \eqn{r_1} (see Gustafson, 2009); \eqn{n\le 24} for \eqn{r_3} (see Girone et al. 2010). We have obtained the null distribution of \eqn{r_4}, \eqn{r_5} and \eqn{r_6} for \eqn{n\le 15} by calculating rank correlations for all the \eqn{n!} permutations of the integers \eqn{1,2, \cdots, n}. Kendall's \eqn{r_2} benefits from a recurrence relationship (Panneton and Robillard, 1972) that can handle \eqn{r_2} for \eqn{n} up \eqn{60}. In this regard, it is very useful the package \code{Mpfr}.
  
 In the case \code{approx} \eqn{\ne} \code{"exact"}, this routine computes critical values and significance levels by applying the density function indicated in \code{approx}. Now, of course,  conservative and liberal p-values coincide. 
  
@@ -47,15 +47,15 @@ In the case \code{approx} \eqn{\ne} \code{"exact"}, this routine computes critic
 
 where \eqn{m_{1,a}=n-2}, \eqn{m_{2,a}=[9n(n-1)/(4n+10)-1]}, \eqn{m_{3,a}=[3(n-1)(n^2-k_n)/2(n^2+2+ k_n)]} with \eqn{k_n=n\ mod \ 2} and \eqn{m_{4,a}=2(n-2.01524)/1.00762}. Furthermore,  \eqn{m_{1,b}=n-2}, \eqn{m_{2,b}=\lfloor m_{2,a} \rfloor}, \eqn{m_{3,b}=\lfloor m_{3,b}+0.5 \rfloor}, \eqn{m_{4,b}=\lfloor m_{4,a} \rfloor}.
 
-The t-Student approximation of \eqn{r_1} and the Gaussian approximation of Kendall's \eqn{r_2} are well known. Vittadini (1996) proposes the t-Student approximation to Kendall's \eqn{r_2}.  Landenna et. al. (1989) suggest the t-Student for the Gini cograduation coefficient \eqn{r_3}. Tarsitano and Amerise (2015) developed  a t-Student approximation to the null distribution of \eqn{r_4}. Terry (1952) has pointed out that the t-distribution with \eqn{n-2} degrees of freedom provides a good approximation to the null distribution of \eqn{r_5^+}, We conjecture that a similar result holds with Filliben's rank correlation \eqn{r_6^+}.
+The t-Student approximation of \eqn{r_1} and the Gaussian approximation of Kendall's \eqn{r_2} are well known. Vittadini (1996) proposes the t-Student approximation to Kendall's \eqn{r_2}.  Landenna et. al. (1989) suggest the t-Student for the Gini cograduation coefficient \eqn{r_3}. Tarsitano and Amerise (2015) developed  a t-Student approximation to the null distribution of \eqn{r_4}. Terry (1952) has pointed out that the t-distribution with \eqn{n-2} degrees of freedom provides a good approximation to the null distribution of \eqn{r_5^+}, We conjecture that a similar result holds with Filliben-Amerise rank correlation \eqn{r_6^+}.
 
 The statistics involved in the Gaussian distribution are:
 
 \deqn{r_1^*=\frac{r_1}{\sqrt{n-1}}, \ r_2^*=r_2\sqrt{\frac{4n+10}{9n(n-1)}}, \ r_3^*=\frac{r_3}{\sqrt{1.5n}}, \  r_4^*=\frac{r_4}{\sqrt{1.00762(n-1)}}}
 
-\deqn{r_5^*=\frac{Fh(r_5)-Fh(r_5(1-0.6/(n+8)))}{\sqrt{(n-3)}}, \ r_6^*=\frac{Fh(r_6)-Fh(r_6(1-0.6/(n+8)))}{\sqrt{(n-3)}}}
+\deqn{r_5^*=\frac{r_5}{\sqrt{n-1}}, \ r_6^*=\frac{r_6}{\sqrt{n-1}}}
 
-where \eqn{Fh(x)=0.5\log[(1+x)/(1-x)]}. Cifarelli and Regazzini (1977) give the Gaussian approximation to the null distribution of Gini coefficient. See also Genest et al. (2010). The Gaussian approximation to the null distribution of \eqn{r_4} is obtained in Tarsitano and Amerise (2015). Fieller and Pearson (1961) obtains the Gaussian approximation to \eqn{r_5}. The generalization of the last result to \eqn{r_6}  is a conjecture, based on similarities of various kinds.
+Cifarelli and Regazzini (1977) give the Gaussian approximation to the null distribution of Gini coefficient. See also Genest et al. (2010). The Gaussian approximation to the null distribution of \eqn{r_4} is obtained in Tarsitano and Amerise (2015). The Gaussian approximations to \eqn{r_5} and  \eqn{r_6} are asymptotic results.
 
 If \code{approx="vggfr"} the Vianelli generalized Gaussian distribution with finite range is fitted by using the method of moments.
 }
@@ -106,8 +106,8 @@ col="darkgreen" )
 abline(h=mean(Area),col="black",lty=2,lwd=1)
 abline(v=mean(Density),col="darkblue",lty=2,lwd=1)
 par(op)
-r<-comprank(Area,Density,"fil","wgh")$r
-ranktes(r, length(Area), "fil", "ga",FALSE, "two", TRUE)
+r<-comprank(Area,Density,"fa","wgh")$r
+ranktes(r, length(Area), "fa", "ga",FALSE, "two", TRUE)
 #####
 #
 \dontrun{
@@ -183,8 +183,8 @@ cat(a$Value,a$Cpv,a$Lpv,"\n")
 r<-comprank(Sm15F,Sm15M,"fy","wgh")$r
 a<-ranktes(r, length(Sm15F), "fy", "ex",TRUE, "two", FALSE)
 cat(a$Value,a$Cpv,a$Lpv,"\n")
-r<-comprank(Sm15F,Sm15M,"fil","wgh")$r
-a<-ranktes(r, length(Sm15F), "fil", "ex",TRUE, "two", FALSE)
+r<-comprank(Sm15F,Sm15M,"fa","wgh")$r
+a<-ranktes(r, length(Sm15F), "fa", "ex",TRUE, "two", FALSE)
 cat(a$Value,a$Cpv,a$Lpv,"\n")
 detach(Starshi)
 }

@@ -1,3 +1,25 @@
+subroutine R25(n,x,y,rc)
+        Implicit none
+        integer, parameter :: MyR = selected_real_kind(15,100)
+        integer, intent(in) :: n
+        real(kind=Myr), intent(in)   :: x(n),y(n)
+        real(kind=Myr), intent(out)  :: rc
+        real(kind=Myr) :: ws,an,ws1,ws2,wt1,wt2
+        integer :: i,j
+        ws=0.;an=n
+        do i=1,n
+           ws1=idint(x(i))+idint(y(i))
+           ws2=idint(x(i))-idint(y(i))
+           do j=1,n
+              wt1=idint(x(j))+idint(y(j))
+              wt2=idint(x(j))-idint(y(j))
+              ws=ws+abs(ws1-wt1)-abs(ws2-wt2)
+           enddo
+        enddo
+        rc=1.5*ws/(an**3-an)
+        return
+end subroutine R25
+!
 subroutine R24(n,x,y,rc,s,sdx)
         Implicit none
         integer, parameter :: MyR = selected_real_kind(15,100)
@@ -22,8 +44,8 @@ subroutine nscor1 (s, n, n2, work, Fault)
         integer, parameter :: MyR = selected_real_kind(15,100)
         integer, parameter :: MyI = selected_int_kind(8)
         integer, intent(in)             :: n2 
-        real (kind=MyR), intent(out)    :: s(n)
         integer, intent(in)             :: n 
+        real (kind=MyR), intent(out)    :: s(n)
         real (kind=MyR), intent(in out) :: work(4,721)
         integer, intent(out)        :: Fault
         real (kind=MyR) :: c,scor, ai1, ani, an,ai
@@ -248,8 +270,8 @@ subroutine Royston(n,s,sdx)
         integer, parameter :: MyI = selected_int_kind(8)
         integer, intent(in) :: n
         real(kind=MyR), intent(in out) :: s(n),sdx
-        real(kind=MyR)     	:: work(4,721),an
-        integer(kind=MyI) 	:: i, in, n2, Fault
+        real(kind=MyR)         :: work(4,721),an
+        integer(kind=MyI)     :: i, in, n2, Fault
         in=mod(n,2)
         do i=1,n
                 s(i)=i
@@ -463,12 +485,17 @@ subroutine gPerm(n,neq,nep,kdq,kdp,Tbq,Tbp,iprp,iprq,Teq,Tep,Tfq,Tfp,Tgq,Tgp,cp,
                                 if (comp) then
                                         call r24(n,cp,cq,rc,s,sdx)
                                 endif
+                        case (7)
+                        rc=ra
+                                if (comp) then
+                                        call r25(n,cp,cq,rc)
+                                endif
                 end select
-                        if (comp) then 
-                                w1=w1+abs(rc-Hilo(2))
+                    if (comp) then 
+                        w1=w1+abs(rc-Hilo(2))
                         w2=w2+abs(rc-Hilo(1))
-                endif
-        enddo
+                    endif
+            enddo
         enddo
         if(comp) then
                 rc=Hilo(2)/(w1+small)+Hilo(1)/(w2+small)
@@ -539,10 +566,13 @@ subroutine wGini(n,p,q,repl,Hilo,index,rc,s,sdx)
                 case (6)
                     rc=ra
                     if(comp) call r24(n,cp,cq,rc,s,sdx)
+                case (7)
+                    rc=ra
+                    if(comp) call r25(n,cp,cq,rc)
                 end select
             if (comp) then 
-                w1=w1+abs(rc-Hilo(2))
-                w2=w2+abs(rc-Hilo(1))
+                    w1=w1+abs(rc-Hilo(2))
+                    w2=w2+abs(rc-Hilo(1))
                 endif
         enddo
         w1=w1/float(repl);w2=w2/float(repl)
@@ -706,6 +736,9 @@ subroutine GGH(n,q,p,Hilo,index,s,sdx)
                 Case(6)
                         call R24(n,cpx,cqx,Hilo(2),s,sdx)
                         call R24(n,cpy,cqy,Hilo(1),s,sdx)
+                Case(7)
+                        call R25(n,cpx,cqx,Hilo(2))
+                        call R25(n,cpy,cqy,Hilo(1))
         end select
         return
 end subroutine GGH
@@ -757,8 +790,8 @@ subroutine Nexper(n,A,mtc,nlast)
  40   mtc=m.ne.nf
         return
  20   if(.not.mtc) goto 30
-        goto(70,80) v
- 70   t=A(2)
+      if(v.eq.2) goto 80
+      t=A(2)
         A(2)=A(1);A(1)=t;v=2;m=m+1
         goto 40
  80   h=3
@@ -1024,8 +1057,10 @@ subroutine SamPerm(n,neq,nep,size,kdq,kdp,Tbq,Tbp,iprp,iprq,Teq,Tep,Tfq,Tfp,Tgq,
                         call r4(n,cp,cq,rc)
         elseif (index.eq.5) then
                         call r23(n,cp,cq,rc,s,sdx)
-        else
+        elseif (index.eq.6) then
                         call r24(n,cp,cq,rc,s,sdx)
+        else
+                        call r25(n,cp,cq,rc)
         endif
         mrc=mrc+rc
         enddo
@@ -1147,8 +1182,10 @@ subroutine AllPerm(n,neq,nep,kdq,kdp,Tbq,Tbp,iprp,iprq,Teq,Tep,Tfq,Tfp,Tgq,Tgp,c
                         call r4(n,cp,cq,rc)
                 elseif (index.eq.5) then
                         call r23(n,cp,cq,rc,s,sdx)
-                else 
+                elseif (index.eq.5) then 
                         call r24(n,cp,cq,rc,s,sdx)
+                else
+                        call r25(n,cp,cq,rc)
                 endif
                 mrc=mrc+rc
         enddo
@@ -1358,28 +1395,28 @@ subroutine meanrank(n,x,rx,prime)
         integer :: g(n+1,2)
         v=0;i=1;f1=1;f2=f1
         do j=1,n
-        	xx(j)=x(j)
+            xx(j)=x(j)
         enddo
         do while(i.le.n)
             if (xx(i+1).eq.xx(i)) then
                f2=f2+1
             else
-            	v=v+1;g(v,1)=f1;g(v,2)=f2	
-            	f1=f2+1;f2=f1
+                v=v+1;g(v,1)=f1;g(v,2)=f2    
+                f1=f2+1;f2=f1
             endif
             i=i+1
         enddo
         do i=1,v
-        	ws=0
-        	do j=g(i,1),g(i,2)
-        		if(prime.eq.1) ws=ws+j
-        		if(prime.eq.2) ws=ws+j**2
-        	enddo
-        	if(prime.eq.1) ws=ws/(g(i,2)-g(i,1)+1)
+            ws=0
+            do j=g(i,1),g(i,2)
+                if(prime.eq.1) ws=ws+j
+                if(prime.eq.2) ws=ws+j**2
+            enddo
+            if(prime.eq.1) ws=ws/(g(i,2)-g(i,1)+1)
             if(prime.eq.2) ws=sqrt(ws/(g(i,2)-g(i,1)+1))
             do j=g(i,1),g(i,2)
-				rx(j)=ws
-        	enddo
+                rx(j)=ws
+            enddo
         enddo
         return
 end subroutine meanrank          
@@ -1646,6 +1683,8 @@ subroutine DealwT(n,p,q,ities,index,sizer,repgin,ifault,rc,Hilo,Medun)
                                         call R23(n,px,qx,rc,s,sdx)
                                 case(6)
                                         call R24(n,px,qx,rc,s,sdx)
+                                case(7)
+                                        call R25(n,px,qx,rc)
                         end select
                 case (5)
                         prime=2
@@ -1663,6 +1702,8 @@ subroutine DealwT(n,p,q,ities,index,sizer,repgin,ifault,rc,Hilo,Medun)
                                         call R23(n,px,qx,rc,s,sdx)
                                 case(6)
                                         call R24(n,px,qx,rc,s,sdx)
+                                case(7)
+                                        call R25(n,px,qx,rc)
                         end select
                 case (6)
                         select case (index)
@@ -1678,6 +1719,8 @@ subroutine DealwT(n,p,q,ities,index,sizer,repgin,ifault,rc,Hilo,Medun)
                                         call R23(n,p,q,rc,s,sdx)
                                 case(6)
                                         call R24(n,p,q,rc,s,sdx)
+                                case(7)
+                                        call R25(n,p,q,rc)
                         end select
     end select  
     return

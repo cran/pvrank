@@ -11,7 +11,7 @@ comprank<-function (p, q=NULL, indr, tiex="woodbury", sizer=100000, repgin=1000,
 	  			if (!is.numeric(p) | !is.numeric(q) ) {stop("Non-numeric argument to mathematical function")}
 				}
 	  sizer<-as.integer(sizer);repgin<-as.integer(repgin)
-	  ain<-c("spearman","kendall","gini","r4","fy","fa")
+	  ain<-c("spearman","kendall","gini","r4","fy1","fy2","sbz")
 	  tos<-c("woodbury","gh","wgh","midrank","dubois","No ties")
 	  indr<-tolower(indr);indr<-match.arg(indr, ain, several.ok = TRUE)
 	  tiex<-tolower(tiex);tiex<-match.arg(tiex, tos, several.ok = TRUE)

@@ -7,8 +7,8 @@
 \arguments{
 \item{p}{a numeric vector, matrix or data frame.}
 \item{q}{NULL (default) or a vector with compatible dimensions to \eqn{p}.}
-\item{indr}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman", "kendall", "gini","r4", "fy" (Fisher-Yates correlation), "fa" (Filliben-Amerise rank correlation). Only enough of the string to be unique is required.}
-\item{tiex}{a character string that specifies the method for breaking ties. Possible options are: "woodbury", "gh","wgh", "midrank","dubois". Only enough of the string to be unique is required. This option is ignored when ties are absent. The options: \code{"midrank"} and \code{"dubois"} are also ignored in the calculation of \eqn{r_4}, Fisher-Yates and Filliben-Amerise.}
+\item{indr}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman", "kendall", "gini","r4", "fy1" (Fisher-Yates - means), "fy2" (Fisher-Yates - medians), "sbz" (Symmetrical Borroni-Zenga). Only enough of the string to be unique is required.}
+\item{tiex}{a character string that specifies the method for breaking ties. Possible options are: "woodbury", "gh","wgh", "midrank","dubois". Only enough of the string to be unique is required. This option is ignored when ties are absent. The options: \code{"midrank"} and \code{"dubois"} are also ignored in the calculation of \eqn{r_4}, Fisher-Yates means and Fisher-Yates medians.}
 \item{sizer}{number of replications for resolving ties by randomization. Default value: \eqn{10^5}.}
 \item{repgin}{number of sampled pairs of permutations needed to apply the weighted max-min method (wgh). Default value: \eqn{10^3}.}
 \item{print}{if \code{FALSE} suppresses some of the output.}
@@ -36,10 +36,11 @@ required that increasing levels (decreasing levels) of agreement are reflected b
 where \eqn{k_n} is zero if \eqn{n} is even and one if \eqn{n} is odd. The function \eqn{g\left(.\right)} is defined as \eqn{g_h(p_i,q_j)=max(p_i/q_j,q_j/p_i)}. The quantity \eqn{M_n} is given by
 \deqn{M_n=\Big[k_n+2\sum_{i=1}^{n/2}(n+1-i)/i\Big]^2 -n^2}
 
-Two other admissible coefficients are:
+Three other admissible coefficients are:
 
-\deqn{Fisher-Yates: r_5=\frac{\sum_{i=1}^n \xi(p_i|n)\xi(q_i|n)}{\sum_{i=1}^n \xi(p_i|n)^2}}
-\deqn{Filliben-Amerise: r_6=\frac{\sum_{i=1}^n \zeta(p_i|n)\zeta(q_i|n)}{\sum_{i=1}^n \zeta(p_i|n)^2}}
+\deqn{FY - means: r_5=\frac{\sum_{i=1}^n \xi(p_i|n)\xi(q_i|n)}{\sum_{i=1}^n \xi(p_i|n)^2}}
+\deqn{FY - medians: r_6=\frac{\sum_{i=1}^n \zeta(p_i|n)\zeta(q_i|n)}{\sum_{i=1}^n \zeta(p_i|n)^2}}
+\deqn{Symmetrical BZ: r_7=1.5\frac{\sum_{i=1}^n\sum_{j=1}^n|(i+p_i)-(j+p_j|-|(i-p_i)-|(j-p_j)|)}{n(n^2-1)}}
 
 The expression \eqn{\xi(p_i|n)} denotes the expected values of the i-th largest standardized deviate in a sample of size \eqn{n} from a standad Gaussian population. See, for example, function evNormOrdStats in package \code{EnvStats}, Millard (2013). An implementation of the Gaussian rank correlation coefficient is given in the \code{rococo} package. See Bodenhofer et al. (2013). Finally, \eqn{\zeta(p_i|n)} is the i-th order statistic median from a standard Gaussian distribution. These medians \eqn{\zeta(p_i|n)} are exactly related to the order statistic medians \eqn{m_i} from a uniform distribution on \eqn{[0,1]}, that is,  \eqn{\zeta(p_i|n)=\Phi^{-1}(m_i)} where \eqn{\Phi^{-1}(x)} is the quantile function of the standard Gaussian cumulative distribution function. The medians of the order statistics from a unit uniform distribution are given by \eqn{m_i=B^{-1}(0.5,i,n+1-i)} where \eqn{B^{-1}(x,a,b)} denotes the inverse Beta distribution with parametes \eqn{a,b} evaluated at the percentage \eqn{x}. Fortunately, \eqn{B^{-1}(,)} is a standard function: \code{qbeta} in package \code{stats}. See Tarsitano & Amerise (2016) and Amerise & Tarsitano (2016).
 
@@ -63,6 +64,8 @@ Amerise, I. L. and Tarsitano, A. (2014). Correction methods for ties in rank cor
 
 Amerise, I. L. and Tarsitano, A. (2016). A new symmetrical test of bivariate independence. Submitted.
   
+Borroni, G. C. (2013). "A new rank correlation measure". \emph{Statistical Papers}, \bold{54}, 255--270.
+
 Bodenhofer, U. et al. (2013). "Testing noisy numerical data for monotonic association". \emph{information Sciences}, \bold{245}, 21--37.
 
 Genest, C. and Plante, J.-F. (2003). "On Blest's measure of rank correlation". \emph{The Canadian Journal of Statistics},  \bold{31}, 35--52.
@@ -127,9 +130,11 @@ a<-comprank(Viscoh,"spearman","gh",print=FALSE)
 print(a$r);cat(" method:", a$ities,"\n")
 b<-comprank(Viscoh,"r4","gh",print=FALSE)
 print(b$r);cat(" method:", b$ities,"\n")
-c<-comprank(Viscoh,"fy","wgh",print=FALSE)
+c<-comprank(Viscoh,"fy1","wgh",print=FALSE)
 print(c$r);cat("method:", c$ities,"\n")
-d<-comprank(Viscoh,"fa","wgh",print=FALSE)
+d<-comprank(Viscoh,"fy2","wgh",print=FALSE)
+print(d$r);cat(" method:", d$ities,"\n")
+d<-comprank(Viscoh,"sbz","wgh",print=FALSE)
 print(d$r);cat(" method:", d$ities,"\n")
 detach(Viscoh)
 #####
@@ -150,8 +155,8 @@ r.cofint <- function(r, n, index, Level=.95) {
 	asd[2]<-sqrt((4*n+10)/(9*n*(n-1))) # Kendall
 	asd[3]<-1/sqrt(1.5*n) # Gini
 	asd[4]<-1/sqrt(1.00762*(n-1)) # r4
-	# Fisher-Yates and Filliben-Amerise
-	if(index<=4) {zse<-r*asd[index]} else {zse<-atan(r*(1-0.6/(n+8)))/sqrt(n-3)} 
+	# Fisher-Yates-means, Fisher-Yates-medians, symmetrical BZ
+	if (index<=4) {zse<-r*asd[index]} else {zse<-atan(r*(1-0.6/(n+8)))/sqrt(n-3)} 
 	rlow <- r - zse * qnorm((1-Level)/2,lower.tail=FALSE);rlow<-max(-1,rlow)
  	rupp <- r + zse * qnorm((1-Level)/2,lower.tail=FALSE);rupp<-min(1,rupp)
  	out<-list(Lower.r=rlow, Upper.r=rupp)
@@ -159,7 +164,6 @@ r.cofint <- function(r, n, index, Level=.95) {
 }
 #
 # Rajalingam S. and Zeya O. "Summative assessments by Spearman`s correlation
-
 # coefficient: a case study. in enhancing learning: teaching & learning international 
 # conference. Nov 24-26 2011. Miri, Sarawak: Curtin University
 
@@ -175,8 +179,8 @@ text(FA,SA,label=1:n,cex=0.8,pos=2)
 abline(h=mean(SA),col="darkblue",lty=2,lwd=1)
 abline(v=mean(FA),col="darkblue",lty=2,lwd=1)
 par(op)
-rct<-c("spearman","kendall","gini","r4", "fy","fa")
-for (index in 1:6){
+rct<-c("spearman","kendall","gini","r4", "fy1","fy2","sbz")
+for (index in 1:7){
 	r<-comprank(FA,SA,rct[index])$r
 	cir<-r.cofint(r,n,index,Level=0.99)
 	cat(rct[index],"Low:",cir$Lower,"Value:",r," Upp: ",cir$Upper.r,"\n")
@@ -192,13 +196,14 @@ y<-c(76, 70, 55, 71, 55, 48, 50, 66, 41, 43, 82, 68, 88, 58, 64, 88, 89, 88,
 84, 88)
 x<-c(123, 109, 62, 104, 57, 37, 44, 100, 16, 28, 138, 105, 159, 75, 88, 164,
 169, 167, 149, 167)
-out1<-comprank(x,y,"s","woodbury")
-out2<-comprank(x,y,"k","woodbury")
-out3<-comprank(x,y,"g","woodbury")
+out1<-comprank(x,y,"sp","woodbury")
+out2<-comprank(x,y,"ke","woodbury")
+out3<-comprank(x,y,"gi","woodbury")
 out4<-comprank(x,y,"r4","woodbury")
-out5<-comprank(x,y,"fy","woodbury")
-out6<-comprank(x,y,"fa","woodbury")
-ind<-c(out1$r,out2$r,out3$r,out4$r,out5$r,out6$r)
+out5<-comprank(x,y,"fy1","woodbury")
+out6<-comprank(x,y,"fy2","woodbury")
+out7<-comprank(x,y,"sbz","woodbury")
+ind<-c(out1$r,out2$r,out3$r,out4$r,out5$r,out6$r,out7$r)
 cat(out1$ities,"\n")
 print(round(ind,5))
 #####
@@ -224,8 +229,9 @@ r1<-comprank(Radiation,"spearman","midrank",print=FALSE);eigen(r1$r)
 r2<-comprank(Radiation,"kendall","midrank",print=FALSE);eigen(r2$r)
 r3<-comprank(Radiation,"gini","midrank",print=FALSE);eigen(r3$r)
 r4<-comprank(Radiation,"r4","gh",print=FALSE);eigen(r4$r)
-r5<-comprank(Radiation,"fy","gh",print=FALSE);eigen(r5$r)
-r6<-comprank(Radiation,"fa","gh",print=FALSE);eigen(r6$r)
+r5<-comprank(Radiation,"fy1","gh",print=FALSE);eigen(r5$r)
+r6<-comprank(Radiation,"fy2","gh",print=FALSE);eigen(r6$r)
+r7<-comprank(Radiation,"sbz","gh",print=FALSE);eigen(r7$r)
 detach(Radiation)
 #####
 #
@@ -241,9 +247,11 @@ cor1<-comprank(Marozzi,"gini","midrank",print=FALSE)
 print(round(cor1$r,3))
 cor1<-comprank(Marozzi,"r4","wgh",print=FALSE)
 print(round(cor1$r,3))
-cor1<-comprank(Marozzi,"fy","wgh",print=FALSE)
+cor1<-comprank(Marozzi,"fy1","wgh",print=FALSE)
 print(round(cor1$r,3))
-cor1<-comprank(Marozzi,"fa","wgh",print=FALSE)
+cor1<-comprank(Marozzi,"fy2","wgh",print=FALSE)
+print(round(cor1$r,3))
+cor1<-comprank(Marozzi,"sbz","wgh",print=FALSE)
 print(round(cor1$r,3))
 detach(Marozzi)
 }

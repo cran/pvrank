@@ -10,6 +10,6 @@ Timc<- function(n,mu2n,mu4n,icoef){
 		0.16508389,0.21291796,0.66508389,0.54625129,0.41508389,0.87958463,0.91508389,0.32402907,
 		0.10258389,0.6573624,0.60258389,0.99069574,0.35258389,0.00715664,0.85258389,0.34048998,
 		0.22758389,0.67382331,0.72758389,0.11826775)
-			zran<-matrix(as.double(halton2),30,2,byrow=TRUE)
-			y <-.Fortran("CRS", Lam, as.double(mu2n), as.double(mu4n), Eval, n,zran, icoef, PACKAGE = "pvrank")
+		zran<-matrix(as.double(halton2),30,2,byrow=TRUE)
+		y <-.Fortran("CRS", Lam, as.double(mu2n), as.double(mu4n), Eval, n, zran, icoef, PACKAGE = "pvrank")
 			return(y)}

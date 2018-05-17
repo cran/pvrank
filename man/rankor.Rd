@@ -7,7 +7,7 @@
 \arguments{
  \item{p}{a numeric vector.}  
  \item{q}{a numeric vector with compatible dimension to \eqn{p}.}  
- \item{index}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman","kendall","gini", "r4", "fy" (Fisher-Yates correlation), and "fa" (Filliben-Amerise rank correlation). Only enough of the string to be unique is required.}  
+ \item{index}{a character string that specifies the rank correlation that is used in the test statistic. Acceptable values are: "spearman","kendall","gini", "r4", "fy1" (Fisher-Yates based on means), "fy2" (Fisher-Yates based on medians) and "sbz" (Symmetrical Borroni-Zenga). Only enough of the string to be unique is required.}  
  \item{approx}{a character string that specifies the type of approximation to the null distribution. Acceptable values are: "vggfr", "exact","gaussian" and "student". Only enough of the string to be unique is required. Exact computations use frequencies precomputed and stored in specific look-up tables.} 
  \item{tiex}{a character string that specifies the method for breaking ties. Possible options are: "woodbury", "gh","wgh", "midrank", "dubois". Only enough of the string to be unique is required. Ignored if there are no equal scores.}
  \item{CC}{if true, a continuity correction is applied.}
@@ -58,14 +58,14 @@ Kruskal, W.H. and Wallis, A. (1952). "Use of ranks in one-criterion variance ana
 data(Lambh);attach(Lambh)
 rankor(DVI,Temp,"spearman","ga","gh",FALSE,"less",TRUE)
 rankor(DVI,Temp,"r4","ga","gh",FALSE,"less",TRUE)
-rankor(DVI,Temp,"fy","ga","gh",FALSE,"less",TRUE)
+rankor(DVI,Temp,"fy1","ga","gh",FALSE,"less",TRUE)
 detach(Lambh)
 #####
 #
 data(Security);attach(Security)
 rankor(AP,OV,"sp","ga","gh",FALSE,"greater",TRUE)
-rankor(MP,AP,"fy","ga","gh",FALSE,"greater",TRUE)
-rankor(OV,MP,"fa","ga","gh",FALSE,"greater",TRUE)
+rankor(MP,AP,"fy2","ga","gh",FALSE,"greater",TRUE)
+rankor(OV,MP,"sbz","ga","gh",FALSE,"greater",TRUE)
 detach(Security)
 #####
 #
@@ -80,7 +80,7 @@ abline(h=mean(DZT_Rate),col="darkblue",lty=2,lwd=1)
 par(op)
 rankor(Latitude,DZT_Rate,"r4","vg","gh",FALSE,"two",TRUE)
 rankor(Latitude,DZT_Rate,"sp","ex","gh",FALSE,"two",TRUE)
-rankor(Latitude,DZT_Rate,"ken","ex","gh",FALSE,"two",TRUE)
+rankor(Latitude,DZT_Rate,"ke","ex","gh",FALSE,"two",TRUE)
 detach(Dizytwin)	
 #####
 #
@@ -104,7 +104,7 @@ par(op)
 rankor(CasePMY,Popw10kHF,"sp","ga","dubois",FALSE,"greater",TRUE)
 #####
 #
-\dontrun{
+\donttest{
 data(Berk);attach(Berk)
 op<-par(mfrow=c(1,1), mgp=c(1.8,.5,0), mar=c(2.8,2.7,2,1),oma=c(0,0,0,0))
 plot(Births,Deaths,main="",pch=19,cex=0.9,cex.lab=0.9,cex.axis=0.8)
@@ -142,7 +142,7 @@ detach(Berk)
 }
 #####
 #
-\dontrun{
+\donttest{
 data(BlaAlt);attach(BlaAlt)
 op<-par(mfrow=c(1,1))
 plot(Fev1,Fev2,main="",xlab="First measurement of Fev",ylab="Second measurement of Fev",
@@ -167,12 +167,12 @@ text(Males,Females,labels=1:length(Females),cex=0.7,pos=2)
 abline(h=mean(Females),col="black",lty=2,lwd=1)
 abline(v=mean(Males),col="black",lty=2,lwd=1)
 par(op)
-out<-rankor(Males,Females,"g","vg","gh",FALSE,"greater")
+out<-rankor(Males,Females,"gi","vg","gh",FALSE,"greater")
 cat(out$Value,out$Cpv,"\n")
 detach(Locre)
 #####
 #
-\dontrun{
+\donttest{
 # Relationship between the size of caudolateral curvilinear osteophyte# of the canine femoral neck and the radiographic view
 data(Femurs);attach(Femurs)
 cos<-ifelse(Gender==1,"steelblue","pink4")
@@ -189,14 +189,14 @@ op<-par(mfrow=c(1,2))
 	abline(h=mean(CCO),col="black",lty=2,lwd=1)
 	abline(v=mean(BW),col="black",lty=2,lwd=1)
 par(op)
-out<-rankor(Age,CCO,"g","st","gh",FALSE,"two")
+out<-rankor(Age,CCO,"gi","st","gh",FALSE,"two")
 cat(out$Value,out$Cpv,"\n")
-out<-rankor(BW,CCO,"fa","st","gh",FALSE,"two")
+out<-rankor(BW,CCO,"fy1","st","gh",FALSE,"two")
 detach(Femurs)
 }
 #####
 #
-\dontrun{
+\donttest{
 data(FrigateB);attach(FrigateB)
 op<-par(mfrow=c(1,1))
 plot(Vol,Frq,pch=19,col="darkgreen")
@@ -204,7 +204,8 @@ abline(h=mean(Frq),col="black",lty=2,lwd=1)
 abline(v=mean(Vol),col="black",lty=2,lwd=1)
 par(op)
 Evar<-function(A){
-	index<-c("s","k","g","r4","fy","fa");approx<-c("ex","ga","st","vg")
+	index<-c("sp", "ke", "gi", "r4", "fy1", "fy2", "sbz")
+	approx<-c("ex","ga","st","vg")
 	for (ind in index){for(app in approx){rankor(A[,1],A[,2],ind,app,"wgh",FALSE,
 			                   "less",TRUE)}}}
 Evar(FrigateB)
@@ -212,15 +213,15 @@ detach(FrigateB)
 }
 #####
 #
-\dontrun{
+\donttest{
 All.index<-function(X,type){
 # Computes the observed rank correlation statistics and their p-values.
-	Index<-c("spearman","kendall","gini","r4","fy","fa")
+	Index<-c("spearman", "kendall", "gini", "r4", "fy1", "fy2", "sbz")
 	n<-nrow(X);A<-matrix(0,6,6)
 	colnames(A)<-c(" Observed","  t-Student","  Gaussian","  VGGFR",
 	"Exact Cons."," Exact Lib.")
-	rownames(A)<-c("Spearman","Kendall ","Gini ","   r4", "Fisher-Yates"," fa")
-	for (i in 1:6){
+	rownames(A)<-c("Spearman","Kendall ","Gini ","   r4", "FY means"," FY  medians", "Symm. BZ")
+	for (i in 1:7){
 		a<-rankor(X[,1],X[,2],Index[i],"St","woodbury",FALSE,type,FALSE)
 		r<-a$Value;A[i,2]<-a$Cpv
 		a<-ranktes(r,n,Index[i],"Ga",FALSE,type,FALSE);A[i,3]<-a$Cpv

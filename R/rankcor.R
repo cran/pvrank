@@ -4,7 +4,7 @@ rankor<-function(p, q, index = "spearman", approx = "exact", tiex = "woodbury", 
 	 if (!is.matrix(p) & !is.numeric(q)) {stop("Non-numeric argument to mathematical function")}
 	 nx<-length(p);ny<-length(q);n<-max(nx,ny)
 	 if (!(nx==ny)) {stop("not all arguments have the same length")}
-	 ain<-c("spearman","kendall","gini","r4","fy","fa")
+	 ain<-c("spearman","kendall","gini","r4","fy1","fy2","sbz")
 	 apx<-c("gaussian","student","vggfr","exact")
 	 alter<- c("two-sided", "greater","less")
 	 tos<-c("woodbury","gh","wgh","midrank","dubois","untied rankings")

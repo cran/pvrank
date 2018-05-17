@@ -3,25 +3,30 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 	if (!(prob>=0 & prob<=1)) {stop("The nominal significance level must satisfy 0<=prob<=1)")
 											 print(prob)}
 	nn<-floor(n);cifer<-9
-	if(n<0) {stop("A negative number of ranks is indicated")}
-	if(!(nn==n)) {warning("A non integer number of ranks is indicated. A truncation is necessary.");n<-nn}
+	if (n<0) {stop("A negative number of ranks is indicated")}
+	if (!(nn==n)) {warning("A non integer number of ranks is indicated. A truncation is necessary.");n<-nn}
 	if (n<5) {stop("The number of ranks must be at least 5");print(n)}
 	Lowt<-"(lower tail)."
 	if (!lower.tail) {Lowt<-"(upper tail)."}
-    ain<-c("spearman","kendall","gini","r4","fy","filliben")
+    ain<-c("spearman","kendall","gini","r4","fy1","fy2","sbz")
 	index<-tolower(index)
 	index<-match.arg(index, ain, several.ok = TRUE)
 	apx<-c("gaussian","student","vggfr","exact");approx<-tolower(approx)
 	approx<-match.arg(approx, apx, several.ok = TRUE)	
  	ksw<-FALSE
 	if ((index=="spearman" & n>26) | (index=="kendall" & n>60) | (index=="gini" & n>24)) {ksw<-TRUE}
-	if ((index=="r4" & n>15) | (index=="fy" & n>15) | (index=="filliben" & n>15)) {ksw<-TRUE}
+	if ((index=="r4" & n>15) | (index=="fy1" & n>15) | (index=="fy2" & n>15)  | (index=="sbz" & n>15)) {ksw<-TRUE}
 	if (approx=="exact" & ksw){
 		    cat("The exact p-value is not available. An approximate p-value is computed \n")
 			if (index=="r4" | index=="spearman") {approx<-"vggfr"}
-			if (index=="kendall" | index=="fy" | index=="filliben") {approx<-"gaussian"}
+			if (index=="kendall" | index=="fy1" | index=="fy2"| index=="sbz") {approx<-"gaussian"}
 			if (index=="gini") {approx<-"student"}
 			}
+	 if (approx=="student" & (index=="fy2" | index=="sbz")){approx<-"gaussian";
+	 	cat("Student-t approx. not yet available. An approximate p-value is computed","\n")}
+	  if (approx=="vggfr" & index=="sbz"){approx<-"gaussian";
+	 	cat("Vggfr approx. not yet available. An approximate p-value is computed","\n")}
+#
 (opr <- mpfr_default_prec())
 	stopifnot(opr == (oprec <- mpfr_default_prec(300)), 300  == mpfr_default_prec())
 	mpfr_default_prec(opr)
@@ -34,7 +39,7 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 	C26<-mpfr(342,320);C27<-mpfr(420,320);C28<-mpfr(315,320);C29<-mpfr(105,320)
 	C30<-mpfr(6,320);C32<-mpfr(1.00762,320);C33<-mpfr(2.01524,320);C34<-mpfr(1,320)
 	C35<-mpfr(10,320);C36<-mpfr(3,320);C37<-mpfr(2,320);C38<-mpfr(8,320)
-	C39<-mpfr(0.5,320);C40<-mpfr(1.5,320)	
+	C39<-mpfr(0.5,320);C40<-mpfr(1.5,320);C100<-mpfr(1.806451613,320)
 #
 	nu<-mpfr(n,320);nm1<-nu-C34;nm2<-nu-C37;nm3<-nu-C36;np1=nu+C34
 	kn<-n%%2;kkn<-mpfr(kn,320)
@@ -50,22 +55,27 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 			}
 	 if (approx=="student"){eappr<-"t-Student"
 	 		 if (prob<1e-323){prob<-1e-323}
+	 		 
 			 if (index=="spearman"){Lamx<-nm2
 			 		Tx<-qt(prob, asNumeric(Lamx));a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
-			 if (index=="gini"){z1<-C36*nm1*(nu^2-kkn);z2<-C37*(nu^2+C37+kkn)
+
+			 if (index=="gini"){
+			 	z1<-C36*nm1*(nu^2-kkn);z2<-C37*(nu^2+C37+kkn)
  			 		Lm<-C39*(z1/z2 -C34);Lamx<-C37*ceiling(Lm+C39)
 		  	    	Tx<-qt(prob,asNumeric(Lamx))
-		  	    	a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}			  	    							   		  	    							   		  	
-		  	if (index=="kendall"){z1<-(C21*nu+C35)/(C6*nu*nm1);Lm<-C39*(C34/z1-C34)
+		  	    	a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
+		  	    	 
+		  if (index=="kendall"){z1<-(C21*nu+C35)/(C6*nu*nm1);Lm<-C39*(C34/z1-C34)
 			 	    Lamx<-C37*ceiling(Lm+C39);Tx<-qt(prob, asNumeric(Lamx))
-			 		a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}			 								 			 				
+			 		a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}	
+			 				 								 			 				
 		     if (index=="r4") {Lamx<-ceiling((nu-C33)/C32)
 		     		Tx<-qt(prob, asNumeric(Lamx))
 		     		a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
-		     if (index=="fy"| index=="filliben" ){
+		     if (index=="fy1"){
 		     		Lamx<-nm2
-			 		Tx<-qt(prob, asNumeric(Lamx)); a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}
-			if (prob>0.5){rc<- -rc}	
+			 		Tx<-qt(prob, asNumeric(Lamx)); a<-Tx^2/Lamx;rc<-sqrt(a/(C34+a))}		  
+			 if (prob>0.5){rc<- -rc}	
 			 }	
 	if (approx=="gaussian"){eappr<-"Gaussian"
 		     if (prob<1e-323){prob<-1e-323}
@@ -74,7 +84,8 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 			 if (index=="gini"){rc<-zx/sqrt(C40*nu)}
 			 if (index=="kendall"){rc<-zx/sqrt((C6*nu*nm1)/(C21*nu+C35))}
 			 if (index=="r4"){rc<-sqrt(C32)*zx/sqrt(nm1)}
-			 if (index=="fy"|index=="filliben"){rc<-zx/sqrt(nm1)}
+			 if (index=="fy1"|index=="fy2"){rc<-zx/sqrt(nm1)}
+			 if (index=="sbz"){rc<-zx/sqrt(C100*nu)}
 			 if (prob>0.5){rc<- -rc}
 			 }
 	if (!(approx=="exact")){
@@ -127,7 +138,7 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 						B<-cbind(mpfr(XX[,1],320),mpfr(XX[,2],320))
 						B[,1]<-B[,1]/100000;ws1<-sum(asNumeric(B[,2]))
 		    			B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}
-		 if ("fy" == index) {estat<-"Fisher-Yates coefficient"
+		 if ("fy1" == index) {estat<-"Fisher-Yates - means"
 		 				fname<-paste("Rg",n,".txt.zip",sep="")
 		 				gname<-paste("Rg",n,".txt",sep="")
 		 				XX <- read.table(unz(system.file(package="pvrank","extdata", fname), gname), header=F)
@@ -135,14 +146,22 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 					    B<-cbind(mpfr(XX[,1],320),mpfr(XX[,2],320))
 					    B[,1]<-B[,1]/10000;ws1<-sum(asNumeric(B[,2]))
 					    B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}						
- 		 if ("filliben" == index) {estat<-"Filliben's rank correlation"
+ 		 if ("fy2" == index) {estat<-"Fisher-Yates - medians"
 		 				fname<-paste("Fil",n,".txt.zip",sep="")
 						gname<-paste("Fil",n,".txt",sep="")
 						XX <- read.table(unz(system.file(package="pvrank","extdata", fname), gname), header=F)
 						XX<-as.matrix(XX,ncol = 2, byrow = TRUE)
 						B<-cbind(mpfr(XX[,1],320),mpfr(XX[,2],320))
-						B[,1]<-B[,1]/10000;ws1<-sum(asNumeric(B[,2]))
-						B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}					
+						B[,1]<-B[,1]/100000;ws1<-sum(asNumeric(B[,2]))
+						B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}
+		 if ("sbz" == index) {estat<-"Symmestric BZ rank correlation"
+		 				fname<-paste("BZ",n,".txt.zip",sep="")
+						gname<-paste("BZ",n,".txt",sep="")
+						XX <- read.table(unz(system.file(package="pvrank","extdata", fname), gname), header=F)
+						XX<-as.matrix(XX,ncol = 2, byrow = TRUE)
+						B<-cbind(mpfr(XX[,1],320),mpfr(XX[,2],320))
+						B[,1]<-B[,1]/100000;ws1<-sum(asNumeric(B[,2]))
+						B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}						
 #  	
 		j1<-which(B[,2]<=prob)[length(which(B[,2]<=prob))]
 		j2<-which(B[,2]>=prob)[1]	       					
@@ -155,6 +174,8 @@ qrank<-function(prob, n, index="spearman", approx="vggfr", print=FALSE, lower.ta
 	c2<-ceiling(asNumeric(Cqv)*1000000000)/1000000000
 	c3<-ceiling(asNumeric(Lpv)*1000000000)/1000000000
 	c4<-ceiling(asNumeric(Lqv)*1000000000)/1000000000
+	if (length(c1)==0 & n==5) {c1<- -1}
+	if (length(c2)==0 & n==5) {c2<- 0}
 	if (print){
 		    cat("Statistic:",index,"n:",n, "Nominal significance level:",
 		    noquote(sprintf("%.6f",asNumeric(prob))),Lowt,"Approx.:",eappr,"\n")

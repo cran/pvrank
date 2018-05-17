@@ -10,7 +10,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 	 if (abs(r)>1) {cat("Observed value: ",r,"\n")
 	 					 stop("The value of the rank correlation should range between 1 to -1")}
 	 cifer<-9;options(digits=9)
-	 ain<-c("spearman","kendall","gini","r4","fy","fa")
+	 ain<-c("spearman","kendall","gini","r4","fy1","fy2","sbz")
 	 apx<-c("gaussian","student","vggfr","exact")
 	 alter<-c("two-sided", "greater","less")
 	 index<-tolower(index);approx<-tolower(approx);type=tolower(type)
@@ -22,14 +22,18 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 	 mpfr_default_prec(opr)
 	 ksw<-FALSE
 	 if ((index=="spearman" & n>26) | (index=="kendall" & n>60) | (index=="gini" & n>24)) {ksw<-TRUE}
-	 if ((index=="r4" & n>15) | (index=="fy" & n>15) | (index=="fa" & n>15)) {ksw<-TRUE}
+	 if ((index=="r4" & n>15) | (index=="fy1" & n>15) | (index=="fy2" & n>15)| (index=="sbz" & n>15)) {ksw<-TRUE}
 	 if (approx=="exact" & ksw){
 		    cat("The exact p-value is not available yet. An approximate p-value is computed \n")
 			if (index=="r4") {approx<-"vggfr"}
-			if (index=="fy" | index=="fa") {approx<-"gaussian"}
+			if (index=="fy1" | index=="fy2"| index=="sbz") {approx<-"gaussian"}
 			if (index=="spearman" |index=="kendall") {approx<-"gaussian"}
 			if (index=="gini") {approx<-"student"}
 			}
+	 if (approx=="student" & (index=="fy2" | index=="sbz")){approx<-"gaussian"
+	 	cat("Student-t approx. not yet available. An approximate p-value is computed","\n")}
+	  if (approx=="vggfr" & index=="sbz"){approx<-"gaussian"
+	 	cat("Vggfr approx. not yet available. An approximate p-value is computed","\n")}
 #
 	C1<-mpfr(25,320);C2<-mpfr(38,320);C3<-mpfr(35,320);C4<-mpfr(72,320)
 	C5<-mpfr(5,320);C6<-mpfr(9,320);C7<-mpfr(100,320);C8<-mpfr(328,320);C9<-mpfr(127,320)
@@ -40,7 +44,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 	C26<-mpfr(342,320);C27<-mpfr(420,320);C28<-mpfr(315,320);C29<-mpfr(105,320)
 	C32<-mpfr(1.00762,320);C33<-mpfr(2.01524,320);C34<-mpfr(1,320);C35<-mpfr(10,320)
 	C37<-mpfr(0.5,320);C38<-mpfr(3,320);C39<-mpfr(2,320);C40<-mpfr(6,320)
-	C41<-mpfr(1.5,320);C42<-mpfr(8,320);C43<-mpfr(0.6,320)
+	C41<-mpfr(1.5,320);C42<-mpfr(8,320);C43<-mpfr(0.6,320);C100<-mpfr(1.806451613,320)
 	nu<-mpfr(n,320);ccf<-mpfr(0,320)
 	kn<-n%%2;kkn<-mpfr(kn,320)
 	nm1<-nu-1;nm2<-nu-2;nm3<-nu-3;np1<-nu+1;np2<-nu+2
@@ -58,10 +62,10 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 			S1<-trunc(C37*r*nu*nm1)
 			if (S1<0){sig<- 1} else {sig<- -1}
 			ccf<- sig*C39/(nu*nm1)}
-	 if (CC & index=="r4"| index=="fy" | index=="fa") {ccf<-0} 
+	 if (CC & index=="r4"| index=="fy1" | index=="fy2" | index=="sbz") {ccf<-0} 
 	 rc<-mpfr(r,320)-ccf;r<-asNumeric(rc) 
 	 Medun<-rep(0,n)
-	 if (index=="fa"){k<-0
+	 if (index=="fy2"){k<-0
 	  		for (i in 1:n){k<-k+1;Medun[k]<-qbeta(0.5,i,n+1-i)}
 			Medun<-as.double(Medun)}
 	if (approx=="exact") {rc<- -abs(rc)}
@@ -71,14 +75,14 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 		Lc1<-lgamma(1/L1+C34+L2);d1<-exp(La1+Lb1-Lc1)
 		L1*(C34-abs(x)^L1)^L2/(C39*d1)}
 #
-		if (approx=="gaussian"){
-				eappr<-"Gaussian"
+		if (approx=="gaussian"){eappr<-"Gaussian"
 				if ("spearman" == index) {zx<-rc*sqrt(nm1);estat<-"Spearman's rho"}
 		 		if ("gini" == index) {zx<-rc*sqrt(C41*nu);estat<-"Gini's cograduation coefficient"}
 			 	if ("kendall" == index) {zx<-rc*sqrt((C6*nu*nm1)/(C21*nu+C35));estat<-"Kendall's tau"}	
 		 		if ("r4" == index) {zx<-rc*sqrt(C32)*sqrt(nm1);estat<-"r4"}
-		 		if ("fy"==index){estat<-"Fisher-Yates coefficient";zx<-rc*sqrt(nm1)}
-		 		if ("fa"==index){estat<-"Filliben-Amerise rank correlation";zx<-rc*sqrt(nm1)}					
+		 		if ("fy1"==index){estat<-"Fisher-Yates - means";zx<-rc*sqrt(nm1)}
+		 		if ("fy2"==index){estat<-"Fisher-Yates - medians";zx<-rc*sqrt(nm1)}	
+		 		if ("sbz"==index){estat<-"Symmetric BZ rank correlation"; zx<-rc*sqrt(C100*nu)}		
 				if (type=="two-sided") {Pv<-2*pnorm(-as.numeric(abs(zx)), mean = 0, sd=1)}
 		 		if (!(type=="two-sided")) {Pv<-pnorm(-as.numeric(abs(zx)), mean = 0, sd=1)}
 		 		if((r<=0  & type=="greater") | (r>0 & type=="less")) {Pv<-1-Pv}
@@ -106,10 +110,8 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 			 	if ("r4" == index){estat<-"r4"
 						    ws1<-(nu-C32)/C33;zx<-C39*ws1/(C34-rc^2);rcp<-abs(rc)*sqrt(zx)
 							Lamx<-trunc(C39*ws1)}									   				   										   
-		 		if ("fy"== index){estat<-"Fisher-Yates coefficient"
-							zx<-nm2/(C34-rc^2);rcp<- abs(rc)*sqrt(zx);Lamx<-nm2}
-			    if ("fa"== index){estat<-"Filliben-Amerise rank correlation"
-							zx<-nm2/(C34-rc^2);rcp<- abs(rc)*sqrt(zx);Lamx<-nm2}
+		 		if ("fy1"== index){estat<-"Fisher-Yates -means"
+							zx<-nm2/(C34-rc^2);rcp<- abs(rc)*sqrt(zx);Lamx<-nm2}	
 				Lamx<-asNumeric(Lamx);rcp<-asNumeric(rcp)
 				if (type=="two-sided") {Pv<-2*pt(-rcp,Lamx)}
 			 	if (!(type=="two-sided")) {Pv<-pt(-abs(rcp),Lamx)}
@@ -123,8 +125,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 				outrank<-list(n=n,Statistic=estat,Value=r,Approx=eappr,Tails=type, Cpv=c1,Lpv=c1)
 				return(outrank)}
 # 
-			if (approx=="vggfr") {				
-				eappr<-"Vianelli-GGFR"
+			if (approx=="vggfr") {eappr<-"Vianelli-GGFR"
 				if ("spearman"== index){estat<-"Spearman's rho";icoef<-1
 													  mu2n<-C34/nm1
 													  mu4n=C38*(C1*nu^3-C2*nu^2-C3*nu+C4)
@@ -146,14 +147,14 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 											    Dc1<-mpfr(1.0949159471,320);Dc2<-mpfr(38.7820781157,320)
 											    Dc3<-mpfr(208.8267798530,320);Dc4<-mpfr(396.3338168921,320)
 												mu4n<- Dc1/sqrt(nm1)+Dc2/nm1/nm1-Dc3/nm1/nm1/nm1+Dc4/nm1/nm1/nm1/nm1}	
-			   if ("fy"== index){estat<-"Fisher-Yates coefficient";icoef<-5
+			   if ("fy1"== index){estat<-"Fisher-Yates - means";icoef<-5
 											    mu2n<-C34/nm1;EvosG<-rep(0,n)
 												for (i in 1:n){EvosG[i]<-evNormOrdStatsScalar(r=i, n=n,approximate=FALSE)}
 												k2a<-sum(EvosG^2);k2b<-sum(EvosG^4);k2<-k2a/(n-1)
 												k4<-n*((n+1)*k2b-(3*(n-1)/n)*k2a^2)/(n-1)/(n-2)/(n-3)
 												k4a<-3*(n-1)/(n+1)+((n-2)*(n-3)/(n*(n^2-1)))*(k4/k2^2)^2
 												k4a<-k4a/(n-1)/(n-1);mu4n<-mpfr(k4a,320)}
-				if ("fa"== index){estat<-"Filliben-Amerise rank correlation";icoef<-6
+				if ("fy2"== index){estat<-"Fisher-Yates - medians";icoef<-6
 											    mu2n<-C34/nm1;EvosG<-rep(0,n);ix<-n%%2
 												if(ix==0){n2<-n/2} else {n2<-(n+1)/2}
   												for (i in 1:n2){
@@ -162,7 +163,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 												k2a<-sum(EvosG^2);k2b<-sum(EvosG^4);k2<-k2a/(n-1)
 												k4<-n*( (n+1)*k2b - (3*(n-1)/n)*k2a^2)/(n-1)/(n-2)/(n-3)
 												k4a<-3*(n-1)/(n+1)+((n-2)*(n-3)/(n*(n^2-1)))*(k4/k2^2)^2
-												k4a<-k4a/(n-1)/(n-1);mu4n<-mpfr(k4a,320)}											
+												k4a<-k4a/(n-1)/(n-1);mu4n<-mpfr(k4a,320)}															
 			 		a<-Timc(n,asNumeric(mu2n),asNumeric(mu4n),icoef)
 			 		Lam<-mpfr(a[[1]],320)
 		 			Pv<-integrateR(Vian,L1=Lam[1],L2=Lam[2],-1,-abs(rc),rel.tol=1e-09)$value
@@ -172,7 +173,8 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 		 			c1<-trunc(asNumeric(Pv)*1000000000)/1000000000
 		 			La1<-formatMpfr(Lam[1],digits=cifer);La2<-formatMpfr(Lam[2],digits=cifer)
 		 			Lz<-as.numeric(c(noquote(La1),noquote(La2)))
-		 			Lz<-trunc(as.numeric(Lz)*1000000000)/1000000000}
+		 			Lz<-trunc(as.numeric(Lz)*1000000000)/1000000000
+		 			}
 #
 				if (approx=="vggfr"){
 						if(print){
@@ -219,7 +221,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 						B<-cbind(mpfr(a,320),mpfr(b,320))
 						B[,1]<-B[,1]/10000;ws1<-sum(as.numeric(B[,2]))
 		    			B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}
-		 if ("fy" == index) {estat<-"Fisher-Yates"
+		 if ("fy1" == index) {estat<-"Fisher-Yates - means"
 		 				fname<-paste("Rg",n,".txt.zip",sep="")
 		 				gname<-paste("Rg",n,".txt",sep="")
 		 				XX <- read.table(unz(system.file(package="pvrank","extdata", fname), gname), header=F)
@@ -229,7 +231,7 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 					    B[,1]<-B[,1]/10000
 					    ws1<-sum(as.numeric(B[,2]))
 					    B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}						
- 		 if ("fa" == index) {estat<-"Filliben-Amerise rank correlation"
+ 		 if ("fy2" == index) {estat<-"Fisher-Yates - medians"
 		 				fname<-paste("Fil",n,".txt.zip",sep="")
 						gname<-paste("Fil",n,".txt",sep="")
 						XX <- read.table(unz(system.file(package="pvrank","extdata", fname), gname), header=F)
@@ -238,20 +240,33 @@ ranktes<-function(r, n, index = "spearman", approx = "exact", CC = FALSE, type =
 						B<-cbind(mpfr(a,320),mpfr(b,320))
 						B[,1]<-B[,1]/10000
 						ws1<-sum(as.numeric(B[,2]))
-						B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}							
+						B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}	
+			 if ("sbz" == index) {estat<-"Symmmetric BZ"
+		 				fname<-paste("BZ",n,".txt.zip",sep="")
+						gname<-paste("BZ",n,".txt",sep="")
+						XX <- read.table(unz(system.file(package="pvrank","extdata", fname), gname), header=F)
+						XX<-as.matrix(XX,ncol = 2, byrow = TRUE)
+						a<-noquote(XX[,1]);b<-noquote(XX[,2])
+						B<-cbind(mpfr(a,320),mpfr(b,320))
+						B[,1]<-B[,1]/100000
+						ws1<-sum(as.numeric(B[,2]))
+						B[,2]<-B[,2]/ws1;B[,2]<-cumsum(B[,2])}												
 # 			
 		 if (type=="two-sided") {
 		 		j1<-which(B[,1]<=rc)[length(which(B[,1]<=rc))];j2<-which(B[,1]>=rc)[1]
-		    	ws1<-C39*B[j1,2];ws2<-C39*B[j2,2]
-		    	if (ws2>1) {ws2<-1}
-		    	Cpv<-ws1;Lpv<-ws2}
+		    		ws1<-C39*B[j1,2];ws2<-C39*B[j2,2]
+		    		ws1<-formatMpfr(ws1,digits=cifer);ws2<-formatMpfr(ws2,digits=cifer)
+		    		ws1<-min(1,ws1); ws2<-min(1,ws2)
+		    		Cpv<-ws1;Lpv<-ws2}
 		if (!(type=="two-sided")){
 				j1<-which(B[,1]<=rc)[length(which(B[,1]<=rc))]
-				j2<-which(B[,1]>rc)[1]
+				j2<-which(B[,1]>=rc)[1]
 		 		if (r>=0) {Cpv<-formatMpfr(1-B[j2,2],digits=cifer);Lpv<-formatMpfr(1-B[j1,2],digits=cifer)
-		 					   ws1<-formatMpfr(B[j1,2],digits=cifer);ws2<-formatMpfr(B[j2,2],digits=cifer)} 
+		 					   ws1<-formatMpfr(B[j1,2],digits=cifer);ws2<-formatMpfr(B[j2,2],digits=cifer)
+		 					   ws1<-min(1,ws1); ws2<-min(1,ws2)} 
 		 		if (r<0)   {Cpv<-formatMpfr(B[j1,2],digits=cifer);Lpv<-formatMpfr(B[j2,2],digits=cifer)
-		 					   ws1<-formatMpfr(1-B[j2,2],digits=cifer);ws2<-formatMpfr(1-B[j1,2],digits=cifer)}
+		 					   ws1<-formatMpfr(1-B[j2,2],digits=cifer);ws2<-formatMpfr(1-B[j1,2],digits=cifer)
+		 					   ws1<-min(1,ws1); ws2<-min(1,ws2)}
 		 		if ((r>0 & type=="greater") | (r<0 & type=="greater") ) {Cpv<-ws1;Lpv<-ws2}
 		 		}
 		 }
